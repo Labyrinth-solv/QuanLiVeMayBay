@@ -1,0 +1,54 @@
+<html>
+	<html>
+		<body>
+	
+			<h1>View Tickets Sold</h1>
+		
+			<head>Tickets sold in the last year: {{last_year}}</head>
+			<br>
+			<head>Tickets sold in the last month: {{last_month}}</head>
+			<br></br>
+
+<form action="/viewReports" method="POST">
+	<head>Search Tickets Sold by Date Range</head>
+	<br>
+	<label>Date Range Start: <input type="date" name = "start_date" required/> </label> </br>
+	<label>Date Range End: <input type="date" name = "end_date" required/> </label> </br>
+	<input type="submit" value = Search />
+	<a href="/staffHome">Return to Home</a>
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}	
+</form>
+
+<br>
+
+{% if searched_total %}
+<head>Total Tickets Sold in searched date range: {{searched_total}}</head>
+{% endif %}
+<br>
+
+{% if searched_monthly %}
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+		<th>Month</th>
+		<th>Tickets Sold</th>
+	
+	{% for line in searched_monthly %}
+	<tr>
+		<td>{{line['0']}}</td>
+		&emsp;
+		<td>{{line['1']}}</td>
+	</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+
+</form>
+</body>
+</html>

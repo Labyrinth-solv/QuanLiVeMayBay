@@ -1,0 +1,50 @@
+<html>
+	<html>
+		<body>
+<a href="/staffHome">Return to Home</a>
+
+
+<h1>Top Destinations</h1>
+
+<head>Top Destinations of the last year</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Destination Airport</th>
+	<th>Tickets Bought to Destination</th>
+
+{% for line in year %}
+	<tr>
+		<td>{{line['arr_airport']}}</td>
+		<td>{{line['count']}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+<br></br>
+
+<head>Top Destinations of the last 3 months</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Destination Airport</th>
+	<th>Tickets Bought to Destination</th>
+
+{% for line in months %}
+	<tr>
+		<td>{{line['arr_airport']}}</td>
+		<td>{{line['count']}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

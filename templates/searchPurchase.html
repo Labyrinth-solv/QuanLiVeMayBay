@@ -1,0 +1,179 @@
+<html>
+<body>
+<form action="/searchPurchaseFlight" method="POST">
+	<h1>Search For Flights and Purchase Flights</h1>
+	<head>Search For Flights</head>
+	<br></br>
+	<label>Source City or Airport: <input type="text" name = "source" required/> </label> </br>
+	<label>Destination City or Airport: <input type="text" name = "destination" required/> </label> </br>
+	<label>Departure Date: <input type="date" name = "depart_date"/> </label> </br>
+	<label>Return Date: <input type="date" name = "return_date"/> </label> </br>
+	<input type="submit" value = Search />
+	<a href="/customerHome">Return to Home</a>
+
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}	
+</form>
+
+</br>
+
+{% if departing_flights or returning_flights %}
+<head> Searched Flights </head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Airline Name</th>
+	&emsp;
+	<th>Flight Number</th>
+	&emsp;
+	<th>Source Airport</th>
+	&emsp;
+	<th>Destination Airport</th>
+	&emsp;
+	<th>Departure Date and Time</th>
+	&emsp;
+	<th>Landing Date and Time</th>
+	&emsp;
+	<th>Base Price</th>
+	&emsp;
+	<th>Airplane ID</th>
+	&emsp;
+	<th>Status</th>
+
+{% for line in departing_flights %}
+	<tr>
+		<td>{{line['name']}}</td>
+		&emsp;
+		<td>{{line['flight_number']}}</td>
+		&emsp;
+		<td>{{line['dep_airport']}}</td>
+		&emsp;
+		<td>{{line['arr_airport']}}</td>
+		&emsp;
+		<td>{{line['dep_date_time']}}</td>
+		&emsp;
+		<td>{{line['arr_date_time']}}</td>
+		&emsp;
+		<td>{{line['base_price']}}</td>
+		&emsp;
+		<td>{{line['ID']}}</td>
+		&emsp;
+		<td>{{line['status']}}</td>
+	</tr>
+{% endfor %}
+
+{% for line in returning_flights %}
+	<tr>
+		<td>{{line['name']}}</td>
+		&emsp;
+		<td>{{line['flight_number']}}</td>
+		&emsp;
+		<td>{{line['dep_airport']}}</td>
+		&emsp;
+		<td>{{line['arr_airport']}}</td>
+		&emsp;
+		<td>{{line['dep_date_time']}}</td>
+		&emsp;
+		<td>{{line['arr_date_time']}}</td>
+		&emsp;
+		<td>{{line['base_price']}}</td>
+		&emsp;
+		<td>{{line['ID']}}</td>
+		&emsp;
+		<td>{{line['status']}}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endif %}
+
+<br>
+<br>
+
+<form action="/purchase" method="POST">
+	<head>Purchase Flight</head>
+	<br></br>
+	<label>Airline Name: <input type="text" name = "airline_name" required/> </label> </br>
+	<label>Flight Number: <input type="number" name = "flight_number" required/> </label> </br>
+	<input type="submit" value = "Purchase Flight" />
+
+	{% if error2 %}
+		<p class="error"><strong>Error:</strong> {{error2}}</p>
+	{% endif %}	
+</form>
+
+{% if flight_info %}
+<br>
+<head> Selected Flight </head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Sale Price</th>
+	&emsp;
+	<th>Airline Name</th>
+	&emsp;
+	<th>Flight Number</th>
+	&emsp;
+	<th>Source Airport</th>
+	&emsp;
+	<th>Destination Airport</th>
+	&emsp;
+	<th>Departure Date and Time</th>
+	&emsp;
+	<th>Landing Date and Time</th>
+	&emsp;
+	<th>Airplane ID</th>
+	&emsp;
+	<th>Status</th>
+	<tr>
+	<td>{{flight_info['sale_price']}}</td>
+	&emsp;
+	<td>{{flight_info['name']}}</td>
+	&emsp;
+	<td>{{flight_info['flight_number']}}</td>
+	&emsp;
+	<td>{{flight_info['dep_airport']}}</td>
+	&emsp;
+	<td>{{flight_info['arr_airport']}}</td>
+	&emsp;
+	<td>{{flight_info['dep_date_time']}}</td>
+	&emsp;
+	<td>{{flight_info['arr_date_time']}}</td>
+	&emsp;
+	<td>{{flight_info['ID']}}</td>
+	&emsp;
+	<td>{{flight_info['status']}}</td>
+	</tr>
+</table>
+
+{% endif %}
+
+{% if processing %}
+<br> 
+
+<form action="/purchaseInfo" method="POST">
+	<input type="hidden" name="flight_info"/>
+	<head>Purchasing Details</head>
+	<br>
+	<label>Confirm Airline Name: <input type="text" name = "airline_name" required/> </label> </br>
+	<label>Confirm Flight Number: <input type="number" name = "flight_number" required/> </label> </br>
+	<label>Card Type: <input type="text" name = "card_type" required/> </label> </br>
+	<label>Card Number: <input type="number" name = "card_number" required/> </label> </br>
+	<label>Name on Card: <input type="text" name = "name_on_card" required/> </label> </br>
+	<label>Expiration Date: <input type="date" name = "expiration_date" required/> </label> </br>
+	<label>Security Code: <input type="password" name = "security_code"/> </label> </br>
+	<input type="submit" value = Purchase />
+
+</form>
+
+{% endif %}
+
+</html>

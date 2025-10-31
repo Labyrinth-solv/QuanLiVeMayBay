@@ -1,0 +1,27 @@
+<html>
+<head>
+	{% if message %}
+	<p class="message"><strong></strong> {{message}}</p>
+	{% endif %}
+</head>
+<body>
+<form action="/customerHome" method="POST">
+	<h1>Welcome {{name}}. How would you like to proceed?</h1>
+	
+	
+	<a href="/viewMyFlights">View My Flights</a>
+	&emsp;
+	<a href="/searchPurchase">Search For Flights and Purchase Flights</a>
+	&emsp;
+	<a href="/rate">Rate Previous Flights</a>
+	&emsp;
+	<a href="/trackSpending">Track My Spending</a>
+	&emsp;
+	<a href="/customerLogout">Logout</a>
+
+</form>
+
+</body>
+
+
+</html>

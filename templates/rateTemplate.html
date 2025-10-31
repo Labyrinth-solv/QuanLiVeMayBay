@@ -1,0 +1,61 @@
+<html>
+<body>
+{% if previous_flights %}
+
+<form action="/rateFlight" method="POST">
+	<h1>Rate Previous Flights</h1>
+	<head>Rating and Comment Form</head>
+	<br>
+	<label>Airline Name: <input type="text" name = "airline_name" required/> </label> </br>
+	<label>Flight Number: <input type="number" name = "flight_number" required/> </label> </br>
+	<label>Rating (1-10): <input type="number" name = "rating" required/> </label> </br>
+	<label>Comment: <input type="text" name = "comment"/> </label> </br>
+	<input type="submit" value = "Submit Rating" />
+	<a href="/customerHome">Return to Home</a>
+
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+</form>
+
+</br>
+
+<head>Previous Flights</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+	</style>
+	<th>Airline Name</th>
+	<th>Flight Number</th>
+	<th>Source Airport</th>
+	<th>Destination Airport</th>
+	<th>Departure Date and Time</th>
+	<th>Landing Date and Time</th>
+	<th>Status</th>
+	<th>Price</th>
+	<th>Ticket ID</th>
+
+{% for line in previous_flights %}
+	<tr>
+		<td>{{line['name']}}</td>
+		<td>{{line['flight_number']}}</td>
+		<td>{{line['dep_airport']}}</td>
+		<td>{{line['arr_airport']}}</td>
+		<td>{{line['dep_date_time']}}</td>
+		<td>{{line['arr_date_time']}}</td>
+		<td>{{line['status']}}</td>
+		<td>{{line['sold_price']}}</td>
+		<td>{{line['ID']}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+{% endif %}
+{% if not previous_flights %}
+<head>You do not have any previous flights to rate or comment on. Please return after you've taken a flight</head>
+{% endif %}
+
+</html>

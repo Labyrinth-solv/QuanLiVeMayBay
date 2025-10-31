@@ -1,0 +1,56 @@
+<html>
+<head>
+</head>
+<body>
+<form action="/status" method="POST">
+	<h1>Check Flight Status</h1>
+	<label>Airline: <input type="text" name = "airline_name" required/> </label> </br>
+	<label>Flight Number: <input type="number" name = "flight_number" required/> </label> </br>
+	<label>Departure Date: <input type="date" name = "departure_date" required/> </label> </br>
+	<input type="submit" value = Search />
+	<a href="/">Go back</a>
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+
+
+</form>
+
+</br> 
+
+{% if statuses %}
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+<head>Searched Flights</head>
+	<br></br>
+	<th>Airline Name</th>
+	<th>Flight Number</th>
+	<th>Source Airport</th>
+	<th>Destination Airport</th>
+	<th>Departure Date and Time</th>
+	<th>Landing Date and Time</th>
+	<th>Base Price</th>
+	<th>Airplane ID</th>
+	<th>Status</th>
+
+{% for line in statuses %}
+	<tr>
+		<td>{{line['name']}}</td>
+		<td>{{line['flight_number']}}</td>
+		<td>{{line['dep_airport']}}</td>
+		<td>{{line['arr_airport']}}</td>
+		<td>{{line['dep_date_time']}}</td>
+		<td>{{line['arr_date_time']}}</td>
+		<td>{{line['base_price']}}</td>
+		<td>{{line['ID']}}</td>
+		<td>{{line['status']}}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endif %}
+</html>

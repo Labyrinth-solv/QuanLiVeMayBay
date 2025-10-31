@@ -1,0 +1,69 @@
+<html>
+<body>
+
+<h1>Track My Spending </h1>
+<head>Spending in the past year: ${{year}}</head>
+<br></br>
+<head>Spending in the past six months</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+		<th>Month</th>
+		<th>Spending</th>
+	
+	{% for line in monthly %}
+	<tr>
+		<td>{{line['0']}}</td>
+		&emsp;
+		<td>${{line['1']}}</td>
+	</tr>
+{% endfor %}
+</table>
+
+
+<form action="/searchSpending" method="POST">
+	<h1>Seach spending in date range</h1>
+	<label>Date Range Start: <input type="date" name = "start_date" required/> </label> </br>
+	<label>Date Range End: <input type="date" name = "end_date" required/> </label> </br>
+	<input type="submit" value = Search />
+	<a href="/customerHome">Return to Home</a>
+
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}	
+
+<br></br>
+
+{% if total %}
+<head>Total spending in searched date range: ${{total}}</head>
+{% endif %}
+
+{% if searched %}
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+		<th>Month</th>
+		<th>Spending</th>
+	
+	{% for line in searched %}
+	<tr>
+		<td>{{line['0']}}</td>
+		&emsp;
+		<td>${{line['1']}}</td>
+	</tr>
+	{% endfor %}
+	</table>
+	{% endif %}
+
+</form>
+
+
+</html>

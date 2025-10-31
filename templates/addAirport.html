@@ -1,0 +1,17 @@
+<html>
+	<html>
+		<body>
+
+<form action="/createAirport" method="POST">
+	<h1>Add an Airport</h1>
+	<label>Airport Name: <input type="text" name = "name" required/> </label> </br>
+	<label>City: <input type="text" name = "city" required/> </label> </br>
+	<input type="submit" value = "Add Airport" />
+
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}
+</form>
+<a href="/staffHome">Return to Home</a>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<html>
+<body>
+
+	<h1>View Flights</h1>
+
+	<head>Flights in next 30 days</head>
+	<table>
+		<style>
+			table, th, td {
+			  border: 1px solid black;
+			  border-collapse: collapse;
+			}
+			</style>
+		<th>Airline Name</th>
+		<th>Flight Number</th>
+		<th>Source Airport</th>
+		<th>Destination Airport</th>
+		<th>Departure Date and Time</th>
+		<th>Landing Date and Time</th>
+		<th>Base Price</th>
+		<th>Aiplane ID</th>
+		<th>Status</th>
+	
+	{% for line in next30 %}
+		<tr>
+			<td>{{line['name']}}</td>
+			<td>{{line['flight_number']}}</td>
+			<td>{{line['dep_airport']}}</td>
+			<td>{{line['arr_airport']}}</td>
+			<td>{{line['dep_date_time']}}</td>
+			<td>{{line['arr_date_time']}}</td>
+			<td>{{line['base_price']}}</td>
+			<td>{{line['ID']}}</td>
+			<td>{{line['status']}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+
+	<br></br>
+
+<form action="/searchStaffFlights" method="POST">
+	<head>Search Flights by Date Range, Destination, or Source</head>
+	<br>
+	<label>Date Range Start: <input type="date" name = "start_date"/> </label> </br>
+	<label>Date Range End: <input type="date" name = "end_date"/> </label> </br>
+	<label>Source Airport or City: <input type="text" name = "source"/> </label> </br>
+	<label>Destination Airport or City: <input type="text" name = "destination"/> </label> </br>
+	<input type="submit" value = Search />
+	<a href="/staffHome">Return to Home</a>
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}	
+</form>
+
+</br>
+
+{% if search_flights %}
+<head>Searched Flights</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Airline Name</th>
+	<th>Flight Number</th>
+	<th>Source Airport</th>
+	<th>Destination Airport</th>
+	<th>Departure Date and Time</th>
+	<th>Landing Date and Time</th>
+	<th>Base Price</th>
+	<th>Airplane ID</th>
+	<th>Status</th>
+
+{% for line in search_flights %}
+	<tr>
+		<td>{{line['name']}}</td>
+		<td>{{line['flight_number']}}</td>
+		<td>{{line['dep_airport']}}</td>
+		<td>{{line['arr_airport']}}</td>
+		<td>{{line['dep_date_time']}}</td>
+		<td>{{line['arr_date_time']}}</td>
+		<td>{{line['base_price']}}</td>
+		<td>{{line['ID']}}</td>
+		<td>{{line['status']}}</td>
+
+	</tr>
+{% endfor %}
+</table>
+<br>
+{% endif %}
+
+
+<form action="/searchFlightCustomers" method="POST">
+	<head>See all customers of a flight</head>
+	<br>
+	<label>Flight Number: <input type="number" name = "flight_number"/> </label> </br>
+	<input type="submit" value = Search />
+	{% if error2 %}
+	<p class="error"><strong>Error:</strong> {{error2}}</p>
+	{% endif %}	
+</form>
+
+</br>
+
+{% if search_flight_customers %}
+<head>Customers</head>
+<table>
+	<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	<th>Email</th>
+	<th>Name</th>
+	<th>Passport Number</th>
+	<th>Passport Expiration Date</th>
+	<th>Passport Country</th>
+	<th>Date of Birth</th>
+	<th>Ticket ID</th>
+	<th>Sold Price</th>
+
+
+
+{% for line in search_flight_customers %}
+	<tr>
+		<td>{{line['email']}}</td>
+		<td>{{line['name']}}</td>
+		<td>{{line['passport_number']}}</td>
+		<td>{{line['passport_exp']}}</td>
+		<td>{{line['passport_country']}}</td>
+		<td>{{line['date_of_birth']}}</td>
+		<td>{{line['ID']}}</td>
+		<td>{{line['sold_price']}}</td>
+	</tr>
+{% endfor %}
+</table>
+<br>
+{% endif %}
+
+</html>

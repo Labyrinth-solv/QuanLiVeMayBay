@@ -1,0 +1,44 @@
+<html>
+<head>
+</head>
+<body>
+<form action="/staffHome" method="POST">
+	{% if message %}
+	<p class="message"><strong></strong> {{message}}</p>
+	{% endif %}	
+	
+	<h1>Welcome {{first_name}} {{last_name}}. How would you like to proceed?</h1>
+	
+	<a href="/viewFlights">View Flights</a>
+	&emsp;
+	<a href="/createFlight">Create New Flight</a>
+	&emsp;
+	<a href="/changeStatus">Change Flight Status</a>
+	&emsp;
+	<a href="/addAirplane">Add Airplane</a>
+	&emsp;
+	<a href="/addAirport">Add Airport</a>
+	&emsp;
+	<a href="/ratings">View Flight Ratings</a>
+	&emsp;
+	<a href="/frequentCustomers">View Frequent Customers</a>
+	&emsp;
+	<a href="/reports">View Reports</a>
+	&emsp;
+	<a href="/quarterlyRevenue">View Quarterly Revenue</a>
+	&emsp;
+	<a href="/topDestinations">View Top Destinations</a>
+	&emsp;
+	<a href="/addPhoneNumber">Add a Phone Number</a>
+	&emsp;
+	<a href="/staffLogout">Logout</a>
+
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{error}}</p>
+	{% endif %}	
+</form>
+
+</body>
+
+
+</html>
