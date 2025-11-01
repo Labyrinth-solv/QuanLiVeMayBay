@@ -36,7 +36,7 @@ CREATE TABLE `airline` (
 
 LOCK TABLES `airline` WRITE;
 /*!40000 ALTER TABLE `airline` DISABLE KEYS */;
-INSERT INTO `airline` VALUES ('China Eastern');
+INSERT INTO `airline` VALUES ('China Eastern'),('Ha Noi');
 /*!40000 ALTER TABLE `airline` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -50,10 +50,8 @@ DROP TABLE IF EXISTS `airline_staff`;
 CREATE TABLE `airline_staff` (
   `username` varchar(30) NOT NULL,
   `password` varchar(30) DEFAULT NULL,
-  `first_name` varchar(30) DEFAULT NULL,
-  `last_name` varchar(30) DEFAULT NULL,
-  `date_of_birth` date DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
+  `yourname` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`username`),
   KEY `name` (`name`),
   CONSTRAINT `airline_staff_ibfk_1` FOREIGN KEY (`name`) REFERENCES `airline` (`name`) ON DELETE SET NULL
@@ -66,7 +64,7 @@ CREATE TABLE `airline_staff` (
 
 LOCK TABLES `airline_staff` WRITE;
 /*!40000 ALTER TABLE `airline_staff` DISABLE KEYS */;
-INSERT INTO `airline_staff` VALUES ('mneedle','password','Manny','Needle','2000-12-09','China Eastern');
+INSERT INTO `airline_staff` VALUES ('admin','admin','Ha Noi',NULL),('mneedle','password','China Eastern',NULL);
 /*!40000 ALTER TABLE `airline_staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,14 +130,7 @@ CREATE TABLE `customer` (
   `email` varchar(30) NOT NULL,
   `name` varchar(30) DEFAULT NULL,
   `password` varchar(30) DEFAULT NULL,
-  `building_number` decimal(30,0) DEFAULT NULL,
-  `street` varchar(30) DEFAULT NULL,
-  `city` varchar(30) DEFAULT NULL,
-  `state` varchar(30) DEFAULT NULL,
   `phone_number` decimal(30,0) DEFAULT NULL,
-  `passport_number` decimal(30,0) DEFAULT NULL,
-  `passport_exp` date DEFAULT NULL,
-  `passport_country` varchar(30) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -151,7 +142,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('email@123.com','Max Needle','password',123,'East 11th Street','New York','New York',1234567890,12345678,'2020-01-01','United States of America','2000-08-30'),('email@345.com','Matt Needle','password',345,'East 12th Street','New York','New York',1234567891,87654321,'2020-01-01','United States of America','1985-11-03');
+INSERT INTO `customer` VALUES ('admin','duc','admin',1,'2005-01-17'),('email@123.com','Max Needle','password',1234567890,'2000-08-30'),('email@345.com','Matt Needle','password',1234567891,'1985-11-03');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -335,4 +326,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-31 10:33:17
+-- Dump completed on 2025-11-01 11:04:00
