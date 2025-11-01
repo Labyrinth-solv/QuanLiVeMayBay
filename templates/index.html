@@ -1,23 +1,41 @@
 <!DOCTYPE html>
-<html>
-	{% if message %}
-	<p class="message"><strong></strong> {{message}}</p>
-	{% endif %}
+<html lang="en">
 <head>
-	<h1>Welcome! How would you like to proceed?</h1>
+    <meta charset="utf-8">
+    <title>Flight System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href = "{{ url_for('static', filename = 'img/favicon-32x32.png') }}" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
 </head>
 
-<body>
-	<a href="/search">Search For Flights</a>
-	&emsp;
-	<a href="/checkStatus">Check Flight Status</a>
-	&emsp;
-	<a href="/customerLogin">Customer Login</a>
-	&emsp;
-	<a href="/customerRegister">Customer Register</a>
-	&emsp;
-	<a href="/staffLogin">Airline Staff Login</a>
-	&emsp;
-	<a href="/staffRegister">Airline Staff Register</a>
+<body class="hide-overlay">
+    <script>
+        const backgrounds = [
+            "/static/img/bg1.jpg",
+            "/static/img/bg2.jpg",
+            "/static/img/bg3.jpg",
+            "/static/img/bg4.jpg"
+        ];
+        const randomIndex = Math.floor(Math.random() * backgrounds.length);
+        document.body.style.background = `url('${backgrounds[randomIndex]}') no-repeat center center fixed`;
+        document.body.style.backgroundSize = "cover";
+    </script>
 
+    <main class="content">
+        <h1>Welcome to the Flight Management System!</h1>
+
+        <nav>
+            <a href="/search">Search Flights</a>
+            <a href="/checkStatus">Check Status</a>
+            <a href="/customerLogin">Customer Login</a>
+            <a href="/customerRegister">Register</a>
+            <a href="/staffLogin">Staff Login</a>
+            <a href="/staffRegister">Staff Register</a>
+        </nav>
+    </main>
+
+    <footer>
+        <p>© 2025 Flight System | All rights reserved</p>
+    </footer>
+</body>
 </html>
