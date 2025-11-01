@@ -1,0 +1,185 @@
+body {
+    /* 1. ẢNH NỀN CỦA BẠN */
+    background-image: url('/static/img/checkstatus.jpg');
+
+    /* 2. Cài đặt cho ảnh nền */
+    background-size: cover;       /* Phủ kín trang */
+    background-position: center;  /* Căn giữa */
+    background-attachment: fixed; /* Giữ cố định khi cuộn */
+    background-repeat: no-repeat; /* Không lặp lại */
+
+    /* 3. Đảm bảo body có position: relative để lớp phủ hoạt động */
+    position: relative;
+
+    /* 4. CÁC THUỘC TÍNH CŨ VẪN GIỮ NGUYÊN */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    /* DÒNG NÀY ĐÃ BỊ XÓA ĐỂ ẢNH NỀN HIỂN THỊ:
+       background: linear-gradient(to bottom right, #eef5ff, #dbefff);
+    */
+    color: #333;
+    margin: 0;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 95vh;
+    box-sizing: border-box;
+}
+
+/* 4. Thêm lớp phủ mờ (Giữ nguyên, đã đúng) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    z-index: -1;
+}
+
+/* 6. Đảm bảo form và table NỔI LÊN TRÊN (Giữ nguyên, đã đúng) */
+form, table {
+    position: relative;
+    z-index: 1;
+}
+h1 {
+    color: #0d47a1;
+    text-align: center;
+    margin-top: 0;
+    font-size: 1.8rem;
+}
+
+/* ========== FORM TÌM KIẾM ========== */
+form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 500px;
+    box-sizing: border-box; /* Quan trọng để padding không làm tăng width */
+    margin-bottom: 30px;
+}
+
+form label {
+    display: block; /* Hiển thị mỗi label/input trên một hàng */
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Style chung cho các ô nhập liệu */
+form input[type="text"],
+form input[type="number"],
+form input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Quan trọng! */
+    margin-bottom: 15px; /* Khoảng cách giữa các trường */
+    font-size: 1rem;
+}
+
+/* Hiệu ứng khi focus vào ô input */
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="date"]:focus {
+    border-color: #2196f3;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+/* Nút Submit "Search" */
+form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px;
+}
+
+form input[type="submit"]:hover {
+    background-color: #1976d2; /* Màu đậm hơn khi hover */
+}
+
+/* Link "Go back" */
+form a {
+    display: block;
+    text-align: center;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+/* ========== THÔNG BÁO LỖI ========== */
+.error {
+    background-color: #ffebee; /* Nền đỏ nhạt */
+    color: #c62828; /* Chữ đỏ đậm */
+    border: 1px solid #c62828;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ========== BẢNG KẾT QUẢ ========== */
+table {
+    width: 100%;
+    max-width: 1000px; /* Giới hạn chiều rộng tối đa của bảng */
+    border-collapse: collapse; /* Bỏ viền kép */
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Giúp bo góc cho bảng */
+    margin-bottom: 30px;
+}
+
+/* Tiêu đề của bảng (Sửa từ <head> thành <caption>) */
+caption {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #0d47a1;
+    padding: 15px;
+    caption-side: top;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* Chỉ giữ lại viền ngang */
+}
+
+/* Hàng tiêu đề (Header) */
+th {
+    background-color: #f4f7f6; /* Màu nền xám nhạt */
+    font-weight: bold;
+    color: #333;
+}
+
+/* Hiệu ứng Zebra-striping (màu xen kẽ cho các hàng) */
+tr:nth-child(even) {
+    background-color: #fbfbfb;
+}
+
+/* Hiệu ứng khi hover chuột lên hàng */
+tr:hover {
+    background-color: #f0f8ff; /* Màu xanh nhạt */
+}
+
+/* Bỏ viền cho hàng cuối cùng */
+tr:last-child td {
+    border-bottom: none;
+}

@@ -1,0 +1,126 @@
+/* ========== BỐ CỤC CHUNG (Giữ nguyên từ trang trước) ========== */
+body {
+    /* Gợi ý: Dùng ảnh nền khác cho trang login nếu muốn */
+    background-image: url('/static/img/checkstatus.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    position: relative;
+
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #333;
+    margin: 0;
+    /* Sửa lại padding để form nằm gần giữa hơn
+      và dùng align-items: center
+    */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa form theo chiều ngang */
+    min-height: 95vh;
+    box-sizing: border-box;
+}
+
+/* Lớp phủ mờ (Giữ nguyên) */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(238, 245, 255, 0.8); /* Màu #eef5ff mờ */
+    z-index: -1;
+}
+
+/* ========== FORM ĐĂNG NHẬP ========== */
+form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 400px; /* Form login nên hẹp hơn form search */
+    box-sizing: border-box;
+    margin-bottom: 30px;
+    position: relative; /* Đảm bảo form nổi lên trên lớp phủ */
+    z-index: 1;
+}
+
+form h1 {
+    color: #0d47a1;
+    text-align: center;
+    margin-top: 0;
+    font-size: 1.8rem;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+/* Style cho ô input (thêm [type="password"]) */
+form input[type="text"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    font-size: 1rem;
+}
+
+form input[type="text"]:focus,
+form input[type="password"]:focus {
+    border-color: #2196f3;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+/* Nút Submit "Login" */
+form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 15px; /* Thêm khoảng cách với link "Go back" */
+}
+
+form input[type="submit"]:hover {
+    background-color: #1976d2;
+}
+
+/* Link "Go back" (Style này áp dụng khi link NẰM TRONG form) */
+form a {
+    display: block;
+    text-align: center;
+    color: #555;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+/* THÔNG BÁO LỖI (Giữ nguyên) */
+.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
+    padding: 12px;
+    border-radius: 5px;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
