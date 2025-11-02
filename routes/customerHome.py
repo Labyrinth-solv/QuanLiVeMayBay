@@ -1,3 +1,5 @@
+import pandas as pd
+
 from db_config import get_connection
 from routes import Flask, render_template, request, session, url_for, redirect, app, get_connection,Blueprint, datetime
 import pymysql.cursors
@@ -537,7 +539,7 @@ def trackSpending():
 
     # get spending for the last year
     cursor = conn.cursor()
-    query = 'SELECT sum(sold_price) as total_spent FROM Ticket WHERE email=%s and purchase_date_time=> DATE_ADD(NOW(), INTERVAL -1 YEAR) and purchase_date_time<= CURRENT_TIMESTAMP'
+    query = 'SELECT sum(sold_price) as total_spent FROM Ticket WHERE email=%s and purchase_date_time >= DATE_ADD(NOW(), INTERVAL -1 YEAR) and purchase_date_time<= CURRENT_TIMESTAMP'
     cursor.execute(query, (email))
     year = cursor.fetchone()['total_spent']
     cursor.close()
@@ -581,9 +583,7 @@ def trackSpending():
 
     # combine all monthly spending into dataframe, reorganize, and send to html as a dictionary
     df = pd.DataFrame(columns=['m', 'y', 'spending'])
-    df = df.append(m0, ignore_index=True).append(m1, ignore_index=True).append(m2, ignore_index=True).append(m3,
-                                                                                                             ignore_index=True).append(
-        m4, ignore_index=True).append(m5, ignore_index=True).append(m6, ignore_index=True)
+    df = pd.concat([df, pd.DataFrame([m0,m1,m2,m3,m4,m5,m6])], ignore_index=True)
     df["date"] = df['m'].astype(int).astype(str) + "/" + df["y"].astype(int).astype(str)
     df.fillna(0, inplace=True)
     df['relative_month'] = df.index.astype(str)

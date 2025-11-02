@@ -25,7 +25,7 @@ def staffLoginAuth():
 
     if data:
         session['username'] = username
-        return redirect(url_for('staffHome'))
+        return redirect(url_for('staffHome.staffHome'))
     else:
         error = 'Invalid login'
         return render_template('staffLogin.html', error=error)
@@ -73,3 +73,8 @@ def staffRegisterAuth():
         else:
             error = "This airline does not exist"
             return render_template('staffRegister.html', error=error)
+
+
+
+
+
