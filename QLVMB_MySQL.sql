@@ -91,7 +91,7 @@ CREATE TABLE `airplane` (
 
 LOCK TABLES `airplane` WRITE;
 /*!40000 ALTER TABLE `airplane` DISABLE KEYS */;
-INSERT INTO `airplane` VALUES ('China Eastern',12345,50),('China Eastern',54321,100);
+INSERT INTO `airplane` VALUES ('Ha Noi',1,200),('China Eastern',12345,50),('China Eastern',54321,100);
 /*!40000 ALTER TABLE `airplane` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +115,7 @@ CREATE TABLE `airport` (
 
 LOCK TABLES `airport` WRITE;
 /*!40000 ALTER TABLE `airport` DISABLE KEYS */;
-INSERT INTO `airport` VALUES ('JFK','New York City'),('PVG','Shanghai');
+INSERT INTO `airport` VALUES ('HAN','Ha Noi'),('JFK','New York City'),('PVG','Shanghai'),('SGN','Ho Chi Minh');
 /*!40000 ALTER TABLE `airport` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,7 +181,7 @@ CREATE TABLE `flight` (
 
 LOCK TABLES `flight` WRITE;
 /*!40000 ALTER TABLE `flight` DISABLE KEYS */;
-INSERT INTO `flight` VALUES ('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed');
+INSERT INTO `flight` VALUES ('Ha Noi',12321,'2025-10-12 16:07:00','HAN','SGN','2025-10-27 15:13:00',100.00,1,'on-time'),('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed'),('Ha Noi',1234567894,'2020-10-20 01:00:00','HAN','SGN','2020-10-20 03:00:00',1000.00,1,'on time');
 /*!40000 ALTER TABLE `flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -326,4 +326,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-01 11:04:00
+-- Dump completed on 2025-11-02 15:18:15
