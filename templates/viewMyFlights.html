@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/baseCustomer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/viewMyFlights.css') }}">
     
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
@@ -125,7 +125,7 @@
         {% endif %}
 
         {% if past_flights %}
-        <h2 class="table-heading">Past Flights</h2>
+        <h2 class="table-heading">Previous Flights</h2>
         <table>
            <thead>
                 <tr>
