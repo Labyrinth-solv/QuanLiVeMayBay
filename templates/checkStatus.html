@@ -4,20 +4,28 @@
     <meta charset="utf-8">
     <title>Check Flight Status</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/checkStatus.css') }}">
+
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
 <body>
     <form action="/status" method="POST">
         <h1>Check Flight Status</h1>
 
-        <label>Airline: <input type="text" name="airline_name" required> </label>
-        <label>Flight Number: <input type="number" name="flight_number" required> </label>
-        <label>Departure Date: <input type="date" name="departure_date" required> </label>
+        <label>Airline:</label>
+        <input type="text" name="airline_name" required>
+
+        <label>Flight Number:</label>
+        <input type="number" name="flight_number" required>
+
+        <label>Departure Date:</label>
+        <input type="date" name="departure_date" required>
 
         <input type="submit" value="Search">
+
         <a href="/">Go back</a>
 
         {% if error %}

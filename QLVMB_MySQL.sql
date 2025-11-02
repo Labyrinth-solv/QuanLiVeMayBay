@@ -223,7 +223,7 @@ DROP TABLE IF EXISTS `monthly_spending`;
 /*!50001 DROP VIEW IF EXISTS `monthly_spending`*/;
 SET @saved_cs_client     = @@character_set_client;
 /*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `monthly_spending` AS SELECT 
+/*!50001 CREATE VIEW `monthly_spending` AS SELECT
  1 AS `ID`,
  1 AS `email`,
  1 AS `name`,

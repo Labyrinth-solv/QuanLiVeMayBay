@@ -1,124 +1,114 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Search for Flights</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
+</head>
+
 <body>
 <form action="/searchFlight" method="POST">
-	<h1>Seach for Flights</h1>
-	<label>Source City or Airport: <input type="text" name = "source" required/> </label> </br>
-	<label>Destination City or Airport: <input type="text" name = "destination" required/> </label> </br>
-	<label>Departure Date: <input type="date" name = "depart_date" required/> </label> </br>
-	<label>Return Date (only required for round trip): <input type="date" name = "return_date"/> </label> </br>
+    <h1>Search for Flights</h1>
 
-	<input type="submit" value = Search />
-	<a href="/">Go back</a>
+    <label>Source City or Airport:</label>
+    <input type="text" name="source" required>
 
-	{% if error %}
-	<p class="error"><strong>Error:</strong> {{error}}</p>
-	{% endif %}
+    <label>Destination City or Airport:</label>
+    <input type="text" name="destination" required>
+
+    <label>Departure Date:</label>
+    <input type="date" name="depart_date" required>
+
+    <label>Return Date (optional for round trip):</label>
+    <input type="date" name="return_date">
+
+    <input type="submit" value="Search">
+
+    <a href="/">Go back</a>
+
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{error}}</p>
+    {% endif %}
 </form>
 
-</br>
 
 {% if one_way %}
-<head> Departing Flights </head>
-<table>
-	<style>
-		table, th, td {
-		  border: 1px solid black;
-		  border-collapse: collapse;
-		}
-		</style>
-	<th>Airline Name</th>
-	&emsp;
-	<th>Flight Number</th>
-	&emsp;
-	<th>Source Airport</th>
-	&emsp;
-	<th>Destination Airport</th>
-	&emsp;
-	<th>Departure Date and Time</th>
-	&emsp;
-	<th>Landing Date and Time</th>
-	&emsp;
-	<th>Base Price</th>
-	&emsp;
-	<th>Airplane ID</th>
-	&emsp;
-	<th>Status</th>
+    <h2 class="table-heading">Departing Flights</h2>
 
-{% for line in one_way %}
-	<tr>
-		<td>{{line['name']}}</td>
-		&emsp;
-		<td>{{line['flight_number']}}</td>
-		&emsp;
-		<td>{{line['dep_airport']}}</td>
-		&emsp;
-		<td>{{line['arr_airport']}}</td>
-		&emsp;
-		<td>{{line['dep_date_time']}}</td>
-		&emsp;
-		<td>{{line['arr_date_time']}}</td>
-		&emsp;
-		<td>{{line['base_price']}}</td>
-		&emsp;
-		<td>{{line['ID']}}</td>
-		&emsp;
-		<td>{{line['status']}}</td>
-	</tr>
-{% endfor %}
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Airline Name</th>
+                <th>Flight Number</th>
+                <th>Source Airport</th>
+                <th>Destination Airport</th>
+                <th>Departure Date and Time</th>
+                <th>Landing Date and Time</th>
+                <th>Base Price</th>
+                <th>Airplane ID</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for line in one_way %}
+            <tr>
+                <td>{{line['name']}}</td>
+                <td>{{line['flight_number']}}</td>
+                <td>{{line['dep_airport']}}</td>
+                <td>{{line['arr_airport']}}</td>
+                <td>{{line['dep_date_time']}}</td>
+                <td>{{line['arr_date_time']}}</td>
+                <td>{{line['base_price']}}</td>
+                <td>{{line['ID']}}</td>
+                <td>{{line['status']}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endif %}
 
-</br>
 
 {% if round_trip %}
-<head> Returning Flights </head>
-<table>
-	<style>
-		table, th, td {
-		  border: 1px solid black;
-		  border-collapse: collapse;
-		}
-		</style>
-	<th>Airline Name</th>
-	&emsp;
-	<th>Flight Number</th>
-	&emsp;
-	<th>Source Airport</th>
-	&emsp;
-	<th>Destination Airport</th>
-	&emsp;
-	<th>Departure Date and Time</th>
-	&emsp;
-	<th>Landing Date and Time</th>
-	&emsp;
-	<th>Base Price</th>
-	&emsp;
-	<th>Airplane ID</th>
-	&emsp;
-	<th>Status</th>
+    <h2 class="table-heading">Returning Flights</h2>
 
-{% for line in round_trip %}
-	<tr>
-		<td>{{line['name']}}</td>
-		&emsp;
-		<td>{{line['flight_number']}}</td>
-		&emsp;
-		<td>{{line['dep_airport']}}</td>
-		&emsp;
-		<td>{{line['arr_airport']}}</td>
-		&emsp;
-		<td>{{line['dep_date_time']}}</td>
-		&emsp;
-		<td>{{line['arr_date_time']}}</td>
-		&emsp;
-		<td>{{line['base_price']}}</td>
-		&emsp;
-		<td>{{line['ID']}}</td>
-		&emsp;
-		<td>{{line['status']}}</td>
-	</tr>
-{% endfor %}
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th>Airline Name</th>
+                <th>Flight Number</th>
+                <th>Source Airport</th>
+                <th>Destination Airport</th>
+                <th>Departure Date and Time</th>
+                <th>Landing Date and Time</th>
+                <th>Base Price</th>
+                <th>Airplane ID</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for line in round_trip %}
+            <tr>
+                <td>{{line['name']}}</td>
+                <td>{{line['flight_number']}}</td>
+                <td>{{line['dep_airport']}}</td>
+                <td>{{line['arr_airport']}}</td>
+                <td>{{line['dep_date_time']}}</td>
+                <td>{{line['arr_date_time']}}</td>
+                <td>{{line['base_price']}}</td>
+                <td>{{line['ID']}}</td>
+                <td>{{line['status']}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endif %}
 
+</body>
 </html>

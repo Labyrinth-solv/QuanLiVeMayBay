@@ -1,7 +1,12 @@
+/* =================================================== */
+/* FILE CHUNG: static/css/base.css                     */
+/* Chứa tất cả style chung cho toàn bộ website         */
+/* =================================================== */
+
 /* ========== BỐ CỤC CHUNG ========== */
 body {
-    /* Bạn có thể dùng ảnh nền khác cho trang staff login */
-    background-image: url('/static/img/checkStatus.jpg');
+    /* Ảnh nền mặc định - có thể bị file CSS riêng ghi đè */
+    background-image: url('/static/img/login-bg.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -13,16 +18,15 @@ body {
     margin: 0;
     padding: 30px;
 
-    /* Căn giữa form ra giữa trang */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Căn giữa theo chiều dọc */
+    justify-content: center; /* Căn giữa form (mặc định) */
     min-height: 95vh;
     box-sizing: border-box;
 }
 
-/* LỚP PHỦ MÀU ĐEN (Giống trang Customer Login) */
+/* LỚP PHỦ MÀU ĐEN (Dùng chung) */
 body::before {
     content: "";
     position: fixed;
@@ -34,19 +38,21 @@ body::before {
     z-index: -1;
 }
 
-/* ========== FORM ĐĂNG NHẬP ========== */
+/* ========== STYLE FORM CHUNG ========== */
 form {
     background-color: #ffffff;
     padding: 30px 35px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     width: 100%;
-    max-width: 400px;
+    /* max-width sẽ được đặt ở file CSS riêng */
+
     box-sizing: border-box;
     position: relative;
     z-index: 1;
 }
 
+/* Tiêu đề H1 (Dùng chung) */
 form h1 {
     color: #0d47a1;
     text-align: center;
@@ -55,36 +61,43 @@ form h1 {
     font-size: 1.8rem;
 }
 
+/* ========== STYLE INPUT CHUNG (Layout 1 cột mặc định) ========== */
+/* Đây là layout cho các form đơn giản (Login, Staff Register) */
+
 form label {
     display: block;
     font-weight: bold;
     color: #555;
-    margin-bottom: 8px;
+    margin-bottom: 8px; /* Khoảng cách từ label tới input */
 }
 
-/* Style cho các ô input */
 form input[type="text"],
-form input[type="password"] {
-    width: 100%;
+form input[type="password"],
+form input[type="date"],
+form input[type="number"] {
+    display: block;
+    width: 100%; /* SỬA LỖI: Giúp input chiếm đủ chiều rộng */
     padding: 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
-    margin-bottom: 20px;
+    margin-bottom: 20px; /* Khoảng cách giữa các trường */
     font-size: 1rem;
 }
 
-/* Hiệu ứng khi focus */
+/* Hiệu ứng focus chung */
 form input[type="text"]:focus,
-form input[type="password"]:focus {
+form input[type="password"]:focus,
+form input[type="date"]:focus,
+form input[type="number"]:focus {
     border-color: #2196f3;
     outline: none;
     box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
 }
 
-/* Nút Submit "Login" */
+/* Nút SUBMIT (Dùng chung) */
 form input[type="submit"] {
-    width: 100%;
+    width: 100%; /* SỬA LỖI: Chiếm đủ chiều rộng */
     padding: 12px;
     background-color: #2196f3;
     color: white;
@@ -101,9 +114,9 @@ form input[type="submit"]:hover {
     background-color: #1976d2;
 }
 
-/* Link "Go back" (nằm bên trong form) */
+/* Link "Go back" (Dùng chung) */
 form a {
-    display: block;
+    display: block; /* SỬA LỖI: Xuống dòng riêng */
     text-align: center;
     color: #555;
     text-decoration: none;
@@ -114,7 +127,7 @@ form a:hover {
     text-decoration: underline;
 }
 
-/* ========== THÔNG BÁO LỖI ========== */
+/* THÔNG BÁO LỖI (Dùng chung) */
 .error {
     background-color: #ffebee;
     color: #c62828;

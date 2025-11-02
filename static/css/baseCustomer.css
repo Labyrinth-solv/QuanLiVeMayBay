@@ -1,0 +1,17 @@
+/* =================================================== */
+/* FILE CHUNG: static/css/app_base.css                 */
+/* Dùng cho TẤT CẢ các trang SAU KHI ĐĂNG NHẬP          */
+/* =================================================== */
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    /* Màu nền xám nhạt (như trong ảnh) */
+    background-color: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 40px 20px; /* Padding cho body */
+    display: flex;
+    justify-content: center; /* Căn giữa "panel" */
+    min-height: 95vh;
+    box-sizing: border-box;
+}

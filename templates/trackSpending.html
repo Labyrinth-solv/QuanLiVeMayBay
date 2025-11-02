@@ -1,69 +1,93 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Track My Spending</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/trackSpending.css') }}">
+    
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
+</head>
+
 <body>
 
-<h1>Track My Spending </h1>
-<head>Spending in the past year: ${{year}}</head>
-<br></br>
-<head>Spending in the past six months</head>
-<table>
-	<style>
-		table, th, td {
-		  border: 1px solid black;
-		  border-collapse: collapse;
-		}
-		</style>
-		<th>Month</th>
-		<th>Spending</th>
-	
-	{% for line in monthly %}
-	<tr>
-		<td>{{line['0']}}</td>
-		&emsp;
-		<td>${{line['1']}}</td>
-	</tr>
-{% endfor %}
-</table>
+<div class="app-panel">
 
+    <header class="app-header">
+        <div class="header-welcome">
+            <h1>Welcome {{name}}.</h1> 
+            <p class="sub-heading">Review your spending history.</p>
+        </div>
+        <div class="header-links">
+            <a href="/customerLogout" class="logout-link">Logout</a>
+            <a href="/customerHome" class="home-link">Return to Home</a>
+        </div>
+    </header>
 
-<form action="/searchSpending" method="POST">
-	<h1>Seach spending in date range</h1>
-	<label>Date Range Start: <input type="date" name = "start_date" required/> </label> </br>
-	<label>Date Range End: <input type="date" name = "end_date" required/> </label> </br>
-	<input type="submit" value = Search />
-	<a href="/customerHome">Return to Home</a>
+    <main class="app-content">
 
-	{% if error %}
-	<p class="error"><strong>Error:</strong> {{error}}</p>
-	{% endif %}	
+        <div class="spending-summary">
+            <h2>Spending in the past year: <strong>${{year}}</strong></h2>
+            <h3>Spending in the past six months</h3>
+            
+            <table class="spending-table">
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Spending</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in monthly %}
+                    <tr>
+                        <td>{{line['0']}}</td>
+                        <td>${{line['1']}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-<br></br>
+        <form action="/searchSpending" method="POST">
+            <h2>Search spending in date range</h2>
+            
+            <label>Date Range Start:</label>
+            <input type="date" name="start_date" required>
+            
+            <label>Date Range End:</label>
+            <input type="date" name="end_date" required>
+            
+            <input type="submit" value="Search">
+            {% if error %}
+            <p class="error"><strong>Error:</strong> {{error}}</p>
+            {% endif %}	
+        </form>
 
-{% if total %}
-<head>Total spending in searched date range: ${{total}}</head>
-{% endif %}
+        {% if total is defined %}
+        <h2 class="table-heading">Total spending in searched date range: ${{total}}</h2>
+        {% endif %}
 
-{% if searched %}
-<table>
-	<style>
-		table, th, td {
-		  border: 1px solid black;
-		  border-collapse: collapse;
-		}
-		</style>
-		<th>Month</th>
-		<th>Spending</th>
-	
-	{% for line in searched %}
-	<tr>
-		<td>{{line['0']}}</td>
-		&emsp;
-		<td>${{line['1']}}</td>
-	</tr>
-	{% endfor %}
-	</table>
-	{% endif %}
+        {% if searched %}
+        <table class="spending-table">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Spending</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in searched %}
+                <tr>
+                    <td>{{line['0']}}</td>
+                    <td>${{line['1']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-</form>
-
-
+    </main> </div> </body>
 </html>
