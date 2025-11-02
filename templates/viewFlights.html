@@ -3,162 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <title>View Flights</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/viewFlights.css') }}">
-
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app-panel">
+    <h1>View Flights</h1>
 
-    <header class="app-header">
-        <div class="header-welcome">
-            <h1>Welcome {{username}}.</h1>
-            <p class="sub-heading">View and manage system flights.</p>
-        </div>
-        <div class="header-links">
-            <a href="/staffLogout" class="logout-link">Logout</a>
-            <a href="/staffHome" class="home-link">Return to Home</a>
-        </div>
-    </header>
+    <!-- Flights in next 30 days -->
+    <h2>Flights in Next 30 Days</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Airline Name</th>
+                <th>Flight Number</th>
+                <th>Source Airport</th>
+                <th>Destination Airport</th>
+                <th>Departure Date and Time</th>
+                <th>Landing Date and Time</th>
+                <th>Base Price</th>
+                <th>Airplane ID</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in next30 %}
+            <tr>
+                <td>{{ line.name }}</td>
+                <td>{{ line.flight_number }}</td>
+                <td>{{ line.dep_airport }}</td>
+                <td>{{ line.arr_airport }}</td>
+                <td>{{ line.dep_date_time }}</td>
+                <td>{{ line.arr_date_time }}</td>
+                <td>{{ line.base_price }}</td>
+                <td>{{ line.ID }}</td>
+                <td>{{ line.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <main class="app-content">
+    <br>
 
-        <h2 class="table-heading">Flights in Next 30 Days</h2>
-        <table>
-            <thead> <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date and Time</th>
-                    <th>Landing Date and Time</th>
-                    <th>Base Price</th>
-                    <th>Airplane ID</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in next30 %}
-                <tr>
-                    <td>{{line['name']}}</td>
-                    <td>{{line['flight_number']}}</td>
-                    <td>{{line['dep_airport']}}</td>
-                    <td>{{line['arr_airport']}}</td>
-                    <td>{{line['dep_date_time']}}</td>
-                    <td>{{line['arr_date_time']}}</td>
-                    <td>{{line['base_price']}}</td>
-                    <td>{{line['ID']}}</td>
-                    <td>{{line['status']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Search flights -->
+    <h2>Search Flights</h2>
+    <form action="{{ url_for('staffHome.searchStaffFlights') }}" method="POST">
+        <label>Source Airport:</label>
+        <select name="source">
+            <option value="">-- Select Source --</option>
+            {% for ap in airports %}
+            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-        <form action="/searchStaffFlights" method="POST">
-            <h2>Search Flights by Date Range, Destination, or Source</h2>
+        <label>Destination Airport:</label>
+        <select name="destination">
+            <option value="">-- Select Destination --</option>
+            {% for ap in airports %}
+            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-            <label>Date Range Start:</label>
-            <input type="date" name="start_date">
+        <label>Start Date:</label>
+        <input type="date" name="start_date">
 
-            <label>Date Range End:</label>
-            <input type="date" name="end_date">
+        <label>End Date:</label>
+        <input type="date" name="end_date">
 
-            <label>Source Airport or City:</label>
-            <input type="text" name="source">
+        <input type="submit" value="Search">
+    </form>
+    <a href="/staffHome">Return to Home</a>
 
-            <label>Destination Airport or City:</label>
-            <input type="text" name="destination">
+    {% if search_flights %}
+    <h3>Search Results</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Flight Number</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Departure</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for f in search_flights %}
+            <tr>
+                <td>{{ f.flight_number }}</td>
+                <td>{{ f.dep_airport }}</td>
+                <td>{{ f.arr_airport }}</td>
+                <td>{{ f.dep_date_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 
-            <input type="submit" value="Search">
-            {% if error %}
-            <p class="error"><strong>Error:</strong> {{error}}</p>
-            {% endif %}
-        </form>
+    <br>
 
-        {% if search_flights %}
-        <h2 class="table-heading">Searched Flights</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date and Time</th>
-                    <th>Landing Date and Time</th>
-                    <th>Base Price</th>
-                    <th>Airplane ID</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in search_flights %}
-                <tr>
-                   <td>{{line['name']}}</td>
-                   <td>{{line['flight_number']}}</td>
-                   <td>{{line['dep_airport']}}</td>
-                   <td>{{line['arr_airport']}}</td>
-                   <td>{{line['dep_date_time']}}</td>
-                   <td>{{line['arr_date_time']}}</td>
-                   <td>{{line['base_price']}}</td>
-                   <td>{{line['ID']}}</td>
-                   <td>{{line['status']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+    <!-- Search customers -->
+    <h2>Search Customers by Flight</h2>
+    <form method="POST" action="{{ url_for('staffHome.searchFlightCustomers') }}">
+        <label for="flight_number">Select Flight:</label>
+        <select name="flight_number" id="flight_number" required>
+            <option value="">-- Choose Flight --</option>
+            {% for f in flights %}
+            <option value="{{ f.flight_number }}">
+                {{ f.flight_number }} | {{ f.dep_airport }} → {{ f.arr_airport }} ({{ f.dep_date_time }})
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Search</button>
+    </form>
+    <a href="/staffHome">Return to Home</a>
 
-        <form action="/searchFlightCustomers" method="POST">
-            <h2>See all customers of a flight</h2>
+    {% if search_flight_customers %}
+    <h3>Customers on Flight</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Seat</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in search_flight_customers %}
+            <tr>
+                <td>{{ c.email }}</td>
+                <td>{{ c.customer_name }}</td>
+                <td>{{ c.seat_number }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% elif error2 %}
+    <p style="color:red">{{ error2 }}</p>
+    {% endif %}
 
-            <label>Flight Number:</label>
-            <input type="number" name="flight_number">
-
-            <input type="submit" value="Search">
-
-            {% if error2 %}
-            <p class="error"><strong>Error:</strong> {{error2}}</p>
-            {% endif %}
-        </form>
-
-        {% if search_flight_customers %}
-        <h2 class="table-heading">Customers</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Email</th>
-                    <th>Name</th>
-                    <th>Passport Number</th>
-                    <th>Passport Expiration Date</th>
-                    <th>Passport Country</th>
-                    <th>Date of Birth</th>
-                    <th>Ticket ID</th>
-                    <th>Sold Price</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in search_flight_customers %}
-                <tr>
-                   <td>{{line['email']}}</td>
-                   <td>{{line['name']}}</td>
-                   <td>{{line['passport_number']}}</td>
-                   <td>{{line['passport_exp']}}</td>
-                   <td>{{line['passport_country']}}</td>
-                   <td>{{line['date_of_birth']}}</td>
-                   <td>{{line['ID']}}</td>
-                   <td>{{line['sold_price']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
-
-    </main> </div> </body>
+</body>
 </html>

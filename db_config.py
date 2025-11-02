@@ -1,4 +1,5 @@
 import pymysql.cursors
+from pymysql.cursors import DictCursor
 
 def get_connection():
     return pymysql.connect(

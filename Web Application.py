@@ -8,7 +8,7 @@ import routes.customer
 from routes import customer, staff, search, checkStatus, customerHome, staffHome
 
 #Initialize the app from Flask
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 conn=get_connection()
 
 app.register_blueprint(customer.customer_bp)

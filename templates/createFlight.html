@@ -1,114 +1,93 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Create New Flight</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+	<html>
+		<body>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/createFlight.css') }}">
+			<h1>Create New Flights</h1>
 
-    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
-</head>
+			<head>Flights in next 30 days</head>
+			<table>
+				<style>
+					table, th, td {
+					  border: 1px solid black;
+					  border-collapse: collapse;
+					}
+					</style>
+				<th>Airline Name</th>
+				<th>Flight Number</th>
+				<th>Source Airport</th>
+				<th>Destination Airport</th>
+				<th>Departure Date and Time</th>
+				<th>Landing Date and Time</th>
+				<th>Base Price</th>
+				<th>Aiplane ID</th>
+				<th>Status</th>
 
-<body>
+			{% for line in next30 %}
+				<tr>
+					<td>{{line['name']}}</td>
+					<td>{{line['flight_number']}}</td>
+					<td>{{line['dep_airport']}}</td>
+					<td>{{line['arr_airport']}}</td>
+					<td>{{line['dep_date_time']}}</td>
+					<td>{{line['arr_date_time']}}</td>
+					<td>{{line['base_price']}}</td>
+					<td>{{line['ID']}}</td>
+					<td>{{line['status']}}</td>
+				</tr>
+			{% endfor %}
+			</table>
 
-<div class="app-panel">
+			<br></br>
 
-    <header class="app-header">
-        <div class="header-welcome">
-            <h1>Welcome {{username}}.</h1>
-            <p class="sub-heading">Create a new flight for the system.</p>
-        </div>
-        <div class="header-links">
-            <a href="/staffLogout" class="logout-link">Logout</a>
-            <a href="/staffHome" class="home-link">Return to Home</a>
-        </div>
-    </header>
+<form action="{{ url_for('staffHome.createStaffFlight') }}" method="POST">
+  <label>Flight Number:</label>
+  <input type="text" name="flight_number" required><br>
 
-    <main class="app-content">
+  <label>Source Airport:</label>
+  <select name="source" required>
+    <option value="">-- Select Source --</option>
+    {% for ap in airports %}
+      <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+    {% endfor %}
+  </select><br>
 
-        <h2 class="table-heading">Flights in Next 30 Days</h2>
-        <table>
-            <thead> <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date and Time</th>
-                    <th>Landing Date and Time</th>
-                    <th>Base Price</th>
-                    <th>Airplane ID</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in next30 %}
-                <tr>
-                    <td>{{line['name']}}</td>
-                    <td>{{line['flight_number']}}</td>
-                    <td>{{line['dep_airport']}}</td>
-                    <td>{{line['arr_airport']}}</td>
-                    <td>{{line['dep_date_time']}}</td>
-                    <td>{{line['arr_date_time']}}</td>
-                    <td>{{line['base_price']}}</td>
-                    <td>{{line['ID']}}</td>
-                    <td>{{line['status']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+  <label>Destination Airport:</label>
+  <select name="destination" required>
+    <option value="">-- Select Destination --</option>
+    {% for ap in airports %}
+      <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+    {% endfor %}
+  </select><br>
 
-        <form action="/createStaffFlight" method="POST">
-            <h2>Create a New Flight</h2>
+  <label>Airplane ID:</label>
+  <select name="ID" required>
+    <option value="">-- Select Airplane --</option>
+    {% for plane in airplanes %}
+      <option value="{{ plane.ID }}">{{ plane.ID }}</option>
+    {% endfor %}
+  </select><br>
 
-            <div class="form-grid">
-                <div>
-                    <label>Flight Number:</label>
-                    <input type="number" name="flight_number" required>
-                </div>
-                <div>
-                    <label>Source Airport:</label>
-                    <input type="text" name="source" required>
-                </div>
-                <div>
-                    <label>Destination Airport:</label>
-                    <input type="text" name="destination" required>
-                </div>
-                <div>
-                    <label>Departing Date:</label>
-                    <input type="date" name="dep_date" required>
-                </div>
-                <div>
-                    <label>Departing Time:</label>
-                    <input type="time" name="dep_time" required>
-                </div>
-                <div>
-                    <label>Arrival Date:</label>
-                    <input type="date" name="arr_date" required>
-                </div>
-                <div>
-                    <label>Arrival Time:</label>
-                    <input type="time" name="arr_time" required>
-                </div>
-                <div>
-                    <label>Base Price:</label>
-                    <input type="number" name="base_price" required>
-                </div>
-                <div>
-                    <label>Airplane ID:</label>
-                    <input type="number" name="ID" required>
-                </div>
-                <div>
-                    <label>Status:</label>
-                    <input type="text" name="status" required>
-                </div>
-            </div> <input type="submit" value="Create Flight">
-            {% if error %}
-               <p class="error"><strong>Error:</strong> {{error}}</p>
-            {% endif %}
-        </form>
+  <label>Status:</label>
+  <select name="status" required>
+    {% for s in statuses %}
+      <option value="{{ s }}">{{ s }}</option>
+    {% endfor %}
+  </select><br>
 
-    </main> </div> </body>
+  <label>Departure Date:</label>
+  <input type="date" name="dep_date" required>
+  <input type="time" name="dep_time" required><br>
+
+  <label>Arrival Date:</label>
+  <input type="date" name="arr_date" required>
+  <input type="time" name="arr_time" required><br>
+
+  <label>Base Price:</label>
+  <input type="number" name="base_price" required><br>
+
+  <input type="submit" value="Create Flight">
+</form>
+
+<a href="/staffHome">Return to Home</a>
+</body>
 </html>
