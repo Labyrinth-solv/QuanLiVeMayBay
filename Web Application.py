@@ -54,7 +54,7 @@ def viewFlights():
 	next30 = cursor.fetchall() 
 	cursor.close()
 
-	return render_template('viewFlights.html', next30 = next30)
+	return render_template(	'viewFlights.html', next30 = next30)
 
 
 # allow staff to search flights run by their airline
