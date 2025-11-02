@@ -1,0 +1,128 @@
+/* =================================================== */
+/* FILE RIÊNG: static/css/staffHome.css                */
+/* Bố cục Dashboard "Nổi" (Giống customerHome)         */
+/* =================================================== */
+
+/* 1. GHI ĐÈ body (từ base.css) để dùng layout mới */
+body {
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0; /* Bỏ padding mặc định */
+}
+
+/* 2. Style cho thông báo (message) */
+.message {
+    width: 100%;
+    padding: 12px;
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border-bottom: 1px solid #a5d6a7;
+    text-align: center;
+    font-weight: bold;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2; /* Nổi trên header */
+}
+
+/* 3. HEADER (Thanh trên cùng) */
+.page-header {
+    display: flex;
+    justify-content: space-between; /* Đẩy 2 khối ra 2 bên */
+    align-items: flex-start; /* Căn lề trên */
+    width: 100%;
+    padding: 30px 50px; /* Thêm padding lề */
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+/* 4. Khối chào mừng (bên trái header) */
+.header-welcome h1 {
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    margin: 0 0 5px 0; /* Bỏ margin mặc định */
+    font-size: 2rem; /* To hơn */
+    text-align: left; /* Ghi đè base.css */
+}
+.header-welcome .sub-heading {
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    margin: 0;
+    text-align: left; /* Ghi đè base.css */
+}
+
+/* 5. Khối Logout (bên phải header) */
+.header-logout .logout-link {
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-decoration: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+}
+.header-logout .logout-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* 6. MAIN (Khu vực chính giữa trang) */
+.page-main {
+    flex-grow: 1; /* Lấp đầy phần còn lại của trang */
+    display: flex;
+    flex-direction: column; /* Cho phép xếp lỗi bên dưới grid */
+    align-items: center; /* Căn giữa grid theo chiều dọc */
+    justify-content: center; /* Căn giữa grid theo chiều ngang */
+    width: 100%;
+}
+
+/* === KHỐI ĐÃ SỬA === */
+/* 7. GRID MENU (Các ô gạch) */
+.menu-grid {
+    display: grid;
+    /* SỬA: Dùng 3 cột vì trang Staff có nhiều nút hơn */
+    grid-template-columns: 1fr 1fr 1fr;
+    /* SỬA: Giảm khoảng cách cho vừa 3 cột */
+    gap: 30px 40px;
+    max-width: 900px; /* Giới hạn độ rộng của grid */
+}
+/* === HẾT KHỐI SỬA === */
+
+
+/* 8. STYLE TỪNG Ô (Giữ nguyên style của customerHome) */
+.menu-grid a {
+    display: block;
+    width: 250px; /* Cho các ô có kích thước cố định */
+    height: 120px; /* Cho các ô có chiều cao */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background-color: #ffffff; /* Nền trắng */
+    color: #0d47a1;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.2s ease-in-out;
+    margin: 0;
+}
+
+/* 9. Hiệu ứng khi di chuột vào ô */
+.menu-grid a:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    color: #004d40;
+}
+
+/* 10. Style cho lỗi (Ghi đè base.css) */
+.page-main .error {
+    max-width: 900px; /* Khớp với độ rộng grid */
+    width: 100%;
+    box-sizing: border-box;
+    margin: 30px auto 0 auto; /* Tự động căn giữa */
+}

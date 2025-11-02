@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Airport</title>
+    <title>Add Airplane</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/addAirport.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/addAirplane.css') }}">
 
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
@@ -19,7 +19,7 @@
     <header class="app-header">
         <div class="header-welcome">
             <h1>Welcome {{username}}.</h1>
-            <p class="sub-heading">Add a new airport to the system.</p>
+            <p class="sub-heading">Add a new airplane to the system.</p>
         </div>
         <div class="header-links">
             <a href="/staffLogout" class="logout-link">Logout</a>
@@ -29,16 +29,19 @@
 
     <main class="app-content">
 
-        <form action="/createAirport" method="POST">
-            <h2>Add an Airport</h2>
+        <form action="/createAirplane" method="POST">
+            <h2>Add an Airplane</h2>
 
-            <label>Airport Name:</label>
+            <label>Airplane ID:</label>
+            <input type="number" name="ID" required>
+
+            <label>Airline Name:</label>
             <input type="text" name="name" required>
 
-            <label>City:</label>
-            <input type="text" name="city" required>
+            <label>Number of Seats:</label>
+            <input type="number" name="seats" required>
 
-            <input type="submit" value="Add Airport">
+            <input type="submit" value="Add Airplane">
             {% if error %}
                <p class="error"><strong>Error:</strong> {{error}}</p>
             {% endif %}
