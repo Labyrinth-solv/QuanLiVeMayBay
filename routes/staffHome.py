@@ -1,5 +1,5 @@
 from db_config import get_connection
-from routes import Flask, render_template, request, session, url_for, redirect, app, Blueprint
+from routes import Flask, render_template, request, session, url_for, redirect, app, Blueprint, datetime
 import pymysql.cursors
 
 staffHome_bp = Blueprint("staffHome", __name__)
@@ -340,3 +340,198 @@ def createStaffFlight():
                         # Trả về giao diện staffHome.html với username và message
                         return render_template('staffHome.html', username=username, message=message)
 
+
+# display form to change flight status
+@staffHome_bp.route('/changeStatus', methods=['GET', 'POST'])
+def changeStatus():
+    return render_template('changeStatus.html')
+
+
+# allow staff to change flight status
+@staffHome_bp.route('/changeFlightStatus', methods=['GET', 'POST'])
+def changeFlightStatus():
+    # get session username
+    username = session['username']
+
+    # get name of airline
+    cursor = conn.cursor()
+    query = 'SELECT name FROM Airline_Staff WHERE username = %s'
+    cursor.execute(query, (username))
+    airline_name = cursor.fetchone()['name']
+    cursor.close()
+
+    # get info from forms
+    flight_number = request.form['flight_number']
+    depart_date = datetime.strptime(request.form['depart_date'], '%Y-%m-%d')
+    desired_status = request.form['desired_status']
+
+    # check that the searched flight exists
+    cursor = conn.cursor()
+    query = 'SELECT * FROM Flight WHERE name = %s and flight_number = %s and year(dep_date_time) = %s and month(dep_date_time) = %s and day(dep_date_time)= %s'
+    cursor.execute(query, (airline_name, flight_number, depart_date.year, depart_date.month, depart_date.day))
+    searched_flight = [cursor.fetchone()]
+    cursor.close()
+
+    if (desired_status not in ['on-time', 'delayed']):  # check that the desired status is on-time or delayed
+        error = "Status must be either on-time or delayed"
+        return render_template('changeStatus.html', error=error)
+    elif (not searched_flight):  # check that the searched flight exists
+        error = "No flight found"
+        return render_template('changeStatus.html', error=error)
+    else:
+        # update the status of the searched flight
+        cursor = conn.cursor()
+        ins = 'UPDATE Flight SET status = %s WHERE name = %s and flight_number= %s'
+        cursor.execute(ins, (desired_status, airline_name, flight_number))
+        conn.commit()
+        cursor.close()
+
+        # get staff's name
+        cursor = conn.cursor()
+        query = 'SELECT first_name, last_name FROM Airline_Staff WHERE username = %s'
+        cursor.execute(query, (username))
+        data = cursor.fetchone()
+        cursor.close()
+
+        # send success message to staffHome
+        message = airline_name + " Flight Number " + flight_number + " successfully updated to '" + desired_status
+        return render_template('staffHome.html', first_name=data['first_name'], last_name=data['last_name'],
+                               message=message)
+
+
+# display form to add airplane and all airplanes owned by staff's airline
+@staffHome_bp.route('/addAirplane', methods=['GET', 'POST'])
+def addAirplane():
+
+	# get session username
+	username = session['username']
+
+	# gert airplanes owned by staff's airline
+	cursor = conn.cursor()
+	query = 'SELECT * from Airplane WHERE name in (SELECT name FROM Airline_Staff WHERE username = %s)'
+	cursor.execute(query, (username))
+	airplanes = cursor.fetchall()
+	cursor.close()
+
+	return render_template('addAirplane.html', airplanes = airplanes)
+
+
+# allow staff to add airplane
+@staffHome_bp.route('/createAirplane', methods=['GET', 'POST'])
+def createAirplane():
+	# get session username
+	username = session['username']
+
+	# gert airplanes owned by staff's airline
+	cursor = conn.cursor()
+	query = 'SELECT * from Airplane WHERE name in (SELECT name FROM Airline_Staff WHERE username = %s)'
+	cursor.execute(query, (username))
+	airplanes = cursor.fetchall()
+	cursor.close()
+
+	# get name of staff's airline
+	cursor = conn.cursor()
+	query = 'SELECT name FROM Airline_Staff WHERE username = %s'
+	cursor.execute(query, (username))
+	airline_name = cursor.fetchone()
+	cursor.close()
+
+	#check that the user is an airline staff
+	if(not airline_name):
+		error = "You are not authorized to add an Airplane"
+		return render_template('addAirplane.html', airplanes = airplanes, error = error)
+	else:
+		airline_name = airline_name['name']
+
+		# get info from forms
+		ID = request.form['ID']
+		seats = request.form['seats']
+
+		# check that the airplane does not already exist
+		cursor = conn.cursor()
+		query = 'SELECT * from Airplane WHERE name = %s and ID = %s'
+		cursor.execute(query, (airline_name, ID))
+		exists = cursor.fetchall()
+		cursor.close()
+
+		if(exists): # check that the airplane does not already exist
+			error = "This Airplane already exists"
+			return render_template('addAirplane.html', airplanes = airplanes, error = error)
+		else:
+			# add airplane to system
+			cursor = conn.cursor()
+			ins = 'INSERT INTO Airplane VALUES (%s, %s, %s)'
+			cursor.execute(ins, (airline_name, ID, seats))
+			conn.commit()
+			cursor.close()
+
+			# get staff's name
+			cursor = conn.cursor()
+			query = 'SELECT first_name, last_name FROM Airline_Staff WHERE username = %s'
+			cursor.execute(query, (username))
+			data = cursor.fetchone()
+			cursor.close()
+
+			# send success message to staffHome
+			message = airline_name+" Airplane "+ID+" successfully added!"
+			return render_template('staffHome.html', first_name = data['first_name'], last_name = data['last_name'], message = message)
+
+
+# display form to add airport
+@staffHome_bp.route('/addAirport', methods=['GET', 'POST'])
+def addAirport():
+	return render_template('addAirport.html')
+
+
+# allow staff to add airport
+@staffHome_bp.route('/createAirport', methods=['GET', 'POST'])
+def createAirport():
+
+	# get session username
+	username = session['username']
+
+	#check that the user is an airline staff
+	cursor = conn.cursor()
+	query = 'SELECT first_name, last_name FROM Airline_Staff WHERE username = %s'
+	cursor.execute(query, (username))
+	data = cursor.fetchone()
+	cursor.close()
+
+	if(not data):
+		error = "You are not authorized to add an Airplane"
+		return render_template('addAirport.html', error = error)
+	else:
+		# get info from froms
+		name = request.form['name']
+		city = request.form['city']
+
+		# check that the airport doesn't already exist
+		cursor = conn.cursor()
+		query = 'SELECT * from Airport WHERE name = %s'
+		cursor.execute(query, (name))
+		exists = cursor.fetchall()
+		cursor.close()
+
+		if(exists): # check that the airport doesn't already exist
+			error = "This Airport already exists in the system"
+			return render_template('addAirport.html', error = error)
+		else:
+			# add airport to the system
+			cursor = conn.cursor()
+			ins = 'INSERT INTO Airport VALUES (%s, %s)'
+			cursor.execute(ins, (name, city))
+			conn.commit()
+			cursor.close()
+
+			# send success message to staffHome
+			message = name+" Airport successfully added!"
+			return render_template('staffHome.html', first_name = data['first_name'], last_name = data['last_name'], message = message)
+
+
+# allow staff to log out
+@staffHome_bp.route('/staffLogout')
+def staffLogout():
+	username = session['username']
+	session.pop('username')
+	message= username+" has been successfully logged out"
+	return render_template('index.html', message = message)

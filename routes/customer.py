@@ -92,3 +92,11 @@ def customerRegisterAuth():
         return render_template('index.html', message=message)
 
 
+
+# allow customers to log out
+@customer_bp.route('/customerLogout')
+def customerLogout():
+	email = session['email']
+	session.pop('email')
+	message= email+" has been successfully logged out"
+	return render_template('index.html', message = message)
