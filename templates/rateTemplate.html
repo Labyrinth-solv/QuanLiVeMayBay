@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/rate.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/baseCustomer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rateTemplate.css') }}">
     
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
@@ -54,35 +54,31 @@
 
         <h2 class="table-heading">Previous Flights</h2>
         <table>
-            <thead>
-                <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date and Time</th>
-                    <th>Landing Date and Time</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                    <th>Ticket ID</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in previous_flights %}
-                <tr>
-                    <td>{{line['name']}}</td>
-                    <td>{{line['flight_number']}}</td>
-                    <td>{{line['dep_airport']}}</td>
-                    <td>{{line['arr_airport']}}</td>
-                    <td>{{line['dep_date_time']}}</td>
-                    <td>{{line['arr_date_time']}}</td>
-                    <td>{{line['status']}}</td>
-                    <td>{{line['sold_price']}}</td>
-                    <td>{{line['ID']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <thead>
+        <tr> <th>Airline Name</th> <th>Flight Number</th>
+            <th>Source Airport</th>
+            <th>Destination Airport</th>
+            <th>Departure Date and Time</th>
+            <th>Landing Date and Time</th>
+            <th>Status</th>
+            <th>Price</th>
+            <th>Ticket ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for line in previous_flights %}
+        <tr> <td>{{line['name']}}</td> <td>{{line['flight_number']}}</td>
+            <td>{{line['dep_airport']}}</td>
+            <td>{{line['arr_airport']}}</td>
+            <td>{{line['dep_date_time']}}</td>
+            <td>{{line['arr_date_time']}}</td>
+            <td>{{line['status']}}</td>
+            <td>{{line['sold_price']}}</td>
+            <td>{{line['ID']}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 
     {% else %}
         <div class="no-flights-message">

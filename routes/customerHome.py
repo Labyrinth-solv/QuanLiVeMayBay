@@ -26,38 +26,22 @@ def viewMyFlights():
     # get session email
     email = session['email']
 
-    # === THÊM ĐOẠN NÀY ĐỂ LẤY TÊN USER ===
-    cursor = conn.cursor()
-    query_name = 'SELECT name FROM customer WHERE email = %s'
-    cursor.execute(query_name, (email))
-    # fetchone() vì bạn chỉ cần 1 kết quả (tên)
-    data = cursor.fetchone()
-    user_name = None  # Đặt tên mặc định
-    if data:
-        user_name = data['name']  # Hoặc data[0] tùy vào cursor của bạn
-    # Không cần close cursor vội, có thể dùng chung
-    # ========================================
-
     # show future flights
-    # (Giữ nguyên code lấy future_flights)
-    query_future = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP'
-    cursor.execute(query_future, (email))
+    cursor = conn.cursor()
+    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP'
+    cursor.execute(query, (email))
     future_flights = cursor.fetchall()
+    cursor.close()
 
     # show past flights
-    # (Giữ nguyên code lấy past_flights)
-    query_past = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time< CURRENT_TIMESTAMP'
-    cursor.execute(query_past, (email))
+    cursor = conn.cursor()
+    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time< CURRENT_TIMESTAMP'
+    cursor.execute(query, (email))
     past_flights = cursor.fetchall()
-    cursor.close()  # Đóng cursor sau khi xong việc
+    cursor.close()
 
-    # === SỬA DÒNG RETURN NÀY ===
-    return render_template(
-        "viewMyFlights.html",
-        future_flights=future_flights,
-        past_flights=past_flights,
-        name=user_name  # <-- THÊM DÒNG NÀY ĐỂ GỬI TÊN SANG HTML
-    )
+    return render_template("viewMyFlights.html", future_flights=future_flights, past_flights=past_flights, name = email)
+
 
 # view customer's future and past flights, as well as searched flights
 @customerHome_bp.route('/searchMyFlights', methods=['GET', 'POST'])
@@ -232,7 +216,8 @@ def searchMyFlights():
 # display searchPurchase page
 @customerHome_bp.route('/searchPurchase')
 def searchPurchase():
-    return render_template("searchPurchase.html")
+    email = session['email']
+    return render_template("searchPurchase.html", name = email)
 
 
 # search flights
@@ -480,7 +465,7 @@ def rate():
 
     error = None
 
-    return render_template("rateTemplate.html", previous_flights=previous_flights, error=error)
+    return render_template("rateTemplate.html", previous_flights=previous_flights, error=error, name = email)
 
 
 # rate previous flight
@@ -610,7 +595,7 @@ def trackSpending():
     monthly_df = df[['0', '1']]
     monthly = monthly_df.to_dict('records')
 
-    return render_template("trackSpending.html", year=year, monthly=monthly)
+    return render_template("trackSpending.html", year=year, monthly=monthly, name = email)
 
 
 # search spending by date range
