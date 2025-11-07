@@ -49,410 +49,164 @@ def viewMyFlights():
     return render_template("viewMyFlights.html", future_flights=future_flights, past_flights=past_flights, name = email, airports=airports)
 
 
-# view customer's future and past flights, as well as searched flights
 @customerHome_bp.route('/searchMyFlights', methods=['GET', 'POST'])
 def searchMyFlights():
-    # get session email
     email = session['email']
-
-    # show future flights
     cursor = conn.cursor()
-    query = 'SELECT * FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP'
-    cursor.execute(query, (email))
+
+    # --- Future & Past Flights ---
+    cursor.execute("""
+        SELECT * FROM Ticket
+        LEFT JOIN Flight ON Ticket.name = Flight.name
+                        AND Ticket.flight_number = Flight.flight_number
+        WHERE email=%s AND dep_date_time > CURRENT_TIMESTAMP
+    """, (email,))
     future_flights = cursor.fetchall()
-    cursor.close()
 
-    # show past flights
-    cursor = conn.cursor()
-    query = 'SELECT * FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time< CURRENT_TIMESTAMP'
-    cursor.execute(query, (email))
+    cursor.execute("""
+        SELECT * FROM Ticket
+        LEFT JOIN Flight ON Ticket.name = Flight.name
+                        AND Ticket.flight_number = Flight.flight_number
+        WHERE email=%s AND dep_date_time < CURRENT_TIMESTAMP
+    """, (email,))
     past_flights = cursor.fetchall()
+
+    # --- Search filters ---
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
+    destination_airport = request.form.get('destination')
+    source_airport = request.form.get('source')
+
+    cursor=conn.cursor(DictCursor)
+    query= 'SELECT * FROM airport'
+    cursor.execute(query)
+    airports=cursor.fetchall()
+
+    # --- Dynamic query building ---
+    query = """
+        SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport,
+               dep_date_time, arr_date_time, status, sold_price,
+               Ticket.ID, purchase_date_time
+        FROM Ticket
+        LEFT JOIN Flight ON Ticket.name = Flight.name
+                        AND Ticket.flight_number = Flight.flight_number
+        WHERE 1=1
+    """
+    params = []
+
+
+
+    # Append conditions dynamically
+    if start_date:
+        query += " AND dep_date_time >= %s"
+        params.append(start_date)
+    if end_date:
+        query += " AND dep_date_time <= %s"
+        params.append(end_date)
+    if source_airport:
+        query += " AND dep_airport = %s"
+        params.append(source_airport)
+    if destination_airport:
+        query += " AND arr_airport = %s"
+        params.append(destination_airport)
+
+    # --- Execute if user provided filters ---
+    search_flights = None
+    if any([start_date, end_date, source_airport, destination_airport]):
+        cursor.execute(query, tuple(params))
+        search_flights = cursor.fetchall()
+
     cursor.close()
 
-    # allow to search by date range, destination, or source
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
-    destination_airport = request.form['destination']
-    source_airport = request.form['source']
-
-    # get destination airport name
-    if (destination_airport):
-        cursor = conn.cursor()
-        query = 'SELECT name FROM Airport WHERE name=%s or city=%s'
-        cursor.execute(query, (destination_airport, destination_airport))
-        destination_airport = cursor.fetchone()
-        cursor.close()
-        if (destination_airport):
-            destination_airport = destination_airport['name']
-        else:
-            error = "No airport found"
-            return render_template("viewMyFlights.html", error=error, future_flights=future_flights,
-                                   past_flights=past_flights)
-
-    # get source airport name
-    if (source_airport):
-        cursor = conn.cursor()
-        query = 'SELECT name FROM Airport WHERE name=%s or city=%s'
-        cursor.execute(query, (source_airport, source_airport))
-        source_airport = cursor.fetchone()
-        cursor.close()
-        if (source_airport):
-            source_airport = source_airport['name']
-        else:
-            error = "No airport found"
-            return render_template("viewMyFlights.html", error=error, future_flights=future_flights,
-                                   past_flights=past_flights)
-
-    # find correct query based on information given
-    if (start_date):
-        if (end_date):
-            if (source_airport):
-                if (destination_airport):
-                    cursor = conn.cursor()
-                    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_date_time<= %s and dep_airport= %s and arr_airport=  %s'
-                    cursor.execute(query, (start_date, end_date, source_airport, destination_airport))
-                    search_flights = cursor.fetchall()
-                    cursor.close()
-                else:
-                    cursor = conn.cursor()
-                    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_date_time<= %s and dep_airport= %s'
-                    cursor.execute(query, (start_date, end_date, source_airport))
-                    search_flights = cursor.fetchall()
-                    cursor.close()
-            elif (destination_airport):
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_date_time<= %s and arr_airport= %s'
-                cursor.execute(query, (start_date, end_date, destination_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-            else:
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_date_time<= %s'
-                cursor.execute(query, (start_date, end_date))
-                search_flights = cursor.fetchall()
-                cursor.close()
-        else:
-            if (source_airport):
-                if (destination_airport):
-                    cursor = conn.cursor()
-                    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_airport= %s and arr_airport=  %s'
-                    cursor.execute(query, (start_date, source_airport, destination_airport))
-                    search_flights = cursor.fetchall()
-                    cursor.close()
-                else:
-                    cursor = conn.cursor()
-                    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and dep_airport= %s'
-                    cursor.execute(query, (start_date, source_airport))
-                    search_flights = cursor.fetchall()
-                    cursor.close()
-            elif (destination_airport):
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s and arr_airport=  %s'
-                cursor.execute(query, (start_date, destination_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-            else:
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time>= %s'
-                cursor.execute(query, (start_date))
-                search_flights = cursor.fetchall()
-                cursor.close()
-    elif (end_date):
-        if (source_airport):
-            if (destination_airport):
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time<= %s and dep_airport= %s and arr_airport=  %s'
-                cursor.execute(query, (end_date, source_airport, destination_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-            else:
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time<= %s and dep_airport= %s'
-                cursor.execute(query, (end_date, source_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-        elif (destination_airport):
-            cursor = conn.cursor()
-            query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time<= %s and arr_airport=  %s'
-            cursor.execute(query, (end_date, destination_airport))
-            search_flights = cursor.fetchall()
-            cursor.close()
-        else:
-            cursor = conn.cursor()
-            query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_date_time<= %s'
-            cursor.execute(query, (end_date))
-            search_flights = cursor.fetchall()
-            cursor.close()
-    elif (source_airport or destination_airport):
-        if (source_airport):
-            if (destination_airport):
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_airport= %s and arr_airport=  %s'
-                cursor.execute(query, (source_airport, destination_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-            else:
-                cursor = conn.cursor()
-                query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE dep_airport= %s'
-                cursor.execute(query, (source_airport))
-                search_flights = cursor.fetchall()
-                cursor.close()
-        elif (destination_airport):
-            cursor = conn.cursor()
-            query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on (Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number) WHERE arr_airport=  %s'
-            cursor.execute(query, (destination_airport))
-            search_flights = cursor.fetchall()
-            cursor.close()
-    else:
-        search_flights = None
-
-    if (not start_date and not end_date and not source_airport and not destination_airport):
+    # --- Render ---
+    if not any([start_date, end_date, source_airport, destination_airport]):
         error = "No flights found"
-        return render_template("viewMyFlights.html", error=error, future_flights=future_flights,
-                               past_flights=past_flights)
-    elif (search_flights):
-        return render_template("viewMyFlights.html", search_flights=search_flights, future_flights=future_flights,
-                               past_flights=past_flights)
+        return render_template("viewMyFlights.html", error=error, airports=airports,
+                               future_flights=future_flights, past_flights=past_flights)
+    elif search_flights:
+        return render_template("viewMyFlights.html", search_flights=search_flights, airports=airports,
+                               future_flights=future_flights, past_flights=past_flights)
     else:
         error = "No flights found"
-        return render_template("viewMyFlights.html", error=error, future_flights=future_flights,
-                               past_flights=past_flights)
+        return render_template("viewMyFlights.html", error=error, airports=airports,
+                               future_flights=future_flights, past_flights=past_flights)
 
 
-# display searchPurchase page
-@customerHome_bp.route('/searchPurchase')
+@customerHome_bp.route('/searchPurchase', methods=['GET'])
 def searchPurchase():
-    email = session['email']
-    return render_template("searchPurchase.html", name = email)
+    with conn.cursor() as cursor:
+        cursor.execute("""
+        SELECT 
+            f.flight_number,
+            f.name,
+            f.dep_airport,
+            f.arr_airport,
+            f.dep_date_time,
+            f.arr_date_time,
+            f.base_price,
+            f.status,
+            a.ID AS airplane_id,
+            a.seats AS total_seats,
+            (a.seats - COUNT(t.id)) AS available_seats
+        FROM flight f
+        JOIN airplane a ON f.id = a.ID
+        LEFT JOIN ticket t ON t.flight_number = f.flight_number
+        GROUP BY 
+        f.flight_number, f.name, f.dep_airport, f.arr_airport,
+        f.dep_date_time, f.arr_date_time, f.base_price, f.status, a.ID, a.seats;
+        """)
+        flights = cursor.fetchall()
+
+    email = session.get('email', 'Guest')
+    return render_template('searchPurchase.html', name=email, flights=flights)
 
 
-# search flights
-@customerHome_bp.route('/searchPurchaseFlight', methods=['GET', 'POST'])
-def searchPurchaseFlight():
-    # collect information from forms and convert dates to datetime objects
-    source = request.form['source']
-    destination = request.form['destination']
-    depart_date = request.form['depart_date']
-    return_date = request.form['return_date']
-    if (depart_date):
-        depart_date = datetime.strptime(request.form['depart_date'], '%Y-%m-%d')
-    if (return_date):
-        return_date = datetime.strptime(request.form['return_date'], '%Y-%m-%d')
-
-    # get airport names
-    if (depart_date or return_date):
-        cursor = conn.cursor()
-        query = 'SELECT name FROM Airport WHERE name=%s or city=%s'
-        cursor.execute(query, (source, source))
-        source_airport = cursor.fetchone()
-        cursor.close()
-        if (source_airport):
-            source_airport = source_airport['name']
-        else:
-            error = "No airport found"
-            return render_template("searchPurchase.html", error=error)
-
-        cursor = conn.cursor()
-        query = 'SELECT name FROM Airport WHERE name=%s or city=%s'
-        cursor.execute(query, (destination, destination))
-        destination_airport = cursor.fetchone()
-        cursor.close()
-        if (destination_airport):
-            destination_airport = destination_airport['name']
-        else:
-            error = "No airport found"
-            return render_template("searchPurchase.html", error=error)
-
-        # search for flights based on whether depart_date, return_date, or both were given
-        if (depart_date and not return_date):
-            cursor = conn.cursor()
-            query = 'SELECT * FROM Flight WHERE dep_airport=%s and arr_airport=%s and year(dep_date_time)= %s and month(dep_date_time) = %s and day(dep_date_time) = %s'
-            cursor.execute(query,
-                           (source_airport, destination_airport, depart_date.year, depart_date.month, depart_date.day))
-            departing_flights = cursor.fetchall()
-            cursor.close()
-            if (departing_flights):
-                return render_template("searchPurchase.html", departing_flights=departing_flights)
-            else:
-                error = "No flights found"
-                return render_template("searchPurchase.html", error=error)
-
-        if (return_date and not depart_date):
-            cursor = conn.cursor()
-            query = 'SELECT * FROM Flight WHERE dep_airport=%s and arr_airport=%s and year(dep_date_time)= %s and month(dep_date_time) = %s and day(dep_date_time) = %s'
-            cursor.execute(query,
-                           (destination_airport, source_airport, return_date.year, return_date.month, return_date.day))
-            returning_flights = cursor.fetchall()
-            cursor.close()
-            if (returning_flights):
-                return render_template("searchPurchase.html", returning_flights=returning_flights)
-            else:
-                error = "No flights found"
-                return render_template("searchPurchase.html", error=error)
-
-        if (depart_date and return_date):
-            cursor = conn.cursor()
-            query = 'SELECT * FROM Flight WHERE dep_airport=%s and arr_airport=%s and year(dep_date_time)= %s and month(dep_date_time) = %s and day(dep_date_time) = %s'
-            cursor.execute(query,
-                           (source_airport, destination_airport, depart_date.year, depart_date.month, depart_date.day))
-            departing_flights = cursor.fetchall()
-
-            cursor.execute(query,
-                           (destination_airport, source_airport, return_date.year, return_date.month, return_date.day))
-            returning_flights = cursor.fetchall()
-            cursor.close()
-
-            if (departing_flights and returning_flights):
-                return render_template("searchPurchase.html", departing_flights=departing_flights,
-                                       returning_flights=returning_flights)
-            elif (departing_flights):
-                return render_template("searchPurchase.html", departing_flights=departing_flights)
-            elif (returning_flights):
-                return render_template("searchPurchase.html", returning_flights=returning_flights)
-            else:
-                error = "No flighs found"
-                return render_template("searchPurchase.html", error=error)
-
-    else:
-        error = "Please enter a departing and/or returning date"
-        return render_template("searchPurchase.html", error=error)
-
-
-# purchase flight ticket
-@customerHome_bp.route('/purchase', methods=['GET', 'POST'])
+@customerHome_bp.route('/purchase', methods=['POST'])
 def purchase():
-	# collect info from forms
-	airline_name = request.form['airline_name']
-	flight_number = request.form['flight_number']
+    selected = request.form['selected_flight']
+    airline_name, flight_number = selected.split('|')
 
-	# check that flight exists
-	cursor = conn.cursor()
-	query = 'SELECT ID FROM Flight WHERE name=%s and flight_number=%s'
-	cursor.execute(query, (airline_name, flight_number))
-	ID = cursor.fetchone()
-	cursor.close()
+    with conn.cursor() as cursor:
+        cursor.execute("""
+            SELECT * FROM flight 
+            WHERE name=%s AND flight_number=%s
+        """, (airline_name, flight_number))
+        flight_info = cursor.fetchone()
 
-	if(not ID):
-		error2 = "Invalid Airline Name or Flight Number"
-		return render_template("searchPurchase.html", error2= error2)
-	else:
-		# get plane capacity
-		cursor = conn.cursor()
-		query = 'SELECT seats FROM Airplane WHERE ID=%s'
-		cursor.execute(query, (ID['ID']))
-		capacity = cursor.fetchone()['seats']
-		cursor.close()
-
-		# get tickets sold
-		cursor = conn.cursor()
-		query = 'SELECT count(distinct ID) as tickets_sold FROM Ticket WHERE name=%s and flight_number=%s'
-		cursor.execute(query, (airline_name, flight_number))
-		tickets_sold = cursor.fetchone()['tickets_sold']
-		cursor.close()
-
-		# calculate sold_price by capacity and tickets sold
-		if(tickets_sold>=capacity):
-			error2 = "This flight is sold out"
-			return render_template("searchPurchase.html", error2= error2)
-		elif(tickets_sold/capacity >= 0.7 ):
-			cursor = conn.cursor()
-			query = 'SELECT *, base_price*1.2 as sale_price FROM Flight WHERE name=%s and flight_number=%s'
-			cursor.execute(query, (airline_name, flight_number))
-			flight_info = cursor.fetchone()
-			cursor.close()
-			return render_template("searchPurchase.html", flight_info = flight_info, processing = 1)
-		else:
-			cursor = conn.cursor()
-			query = 'SELECT *, base_price as sale_price FROM Flight WHERE name=%s and flight_number=%s'
-			cursor.execute(query, (airline_name, flight_number))
-			flight_info = cursor.fetchone()
-			cursor.close()
-			return render_template("searchPurchase.html", flight_info = flight_info, processing = 1)
+    email = session.get('email', 'Guest')
+    return render_template('searchPurchase.html', name=email, flights=[], flight_info=flight_info)
 
 
-# input purchase information
-@customerHome_bp.route('/purchaseInfo', methods=['GET', 'POST'])
+@customerHome_bp.route('/purchaseInfo', methods=['POST'])
 def purchaseInfo():
-	# get session email
-	email  = session['email']
+    airline_name = request.form['airline_name']
+    flight_number = request.form['flight_number']
+    sold_price = request.form['sold_price']
 
-	# get info from forms
-	airline_name = request.form['airline_name']
-	flight_number = request.form['flight_number']
-	card_type = request.form['card_type']
-	card_number = request.form['card_number']
-	name_on_card = request.form['name_on_card']
-	exp_date = request.form['expiration_date']
+    email = session.get('email')
+    if not email:
+        return redirect('/login')
 
-	# check that the flight exists
-	cursor = conn.cursor()
-	query = 'SELECT ID FROM Flight WHERE name=%s and flight_number=%s'
-	cursor.execute(query, (airline_name, flight_number))
-	ID = cursor.fetchone()
-	cursor.close()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT ID FROM ticket ORDER BY ID DESC LIMIT 1")
+        last = cursor.fetchone()
+        if last and last['ID'].startswith("TK"):
+            num = int(last['ID'][2:]) + 1
+        else:
+            num = 1
+        new_id = f"TK{num:03}"
 
-	# check that the card type is valid
-	if(card_type not in ["credit", "Credit", "CREDIT", "debit", "Debit", "DEBIT"]):
-		error2 = "Invalid card type. Cards must be credit or debit"
-		return render_template("searchPurchase.html", error2= error2)
-	elif(not ID): # check that the flight exists
-		error2 = "Invalid Airline Name or Flight Number"
-		return render_template("searchPurchase.html", error2= error2)
-	else:
-		# get plane capacity
-		cursor = conn.cursor()
-		query = 'SELECT seats FROM Airplane WHERE ID=%s'
-		cursor.execute(query, (ID['ID']))
-		capacity = cursor.fetchone()['seats']
-		cursor.close()
+        cursor.execute("""
+            INSERT INTO ticket (ID, email, name, flight_number, sold_price, purchase_date_time)
+            VALUES (%s, %s, %s, %s, %s, NOW())
+        """, (new_id, email, airline_name, flight_number, sold_price))
+        conn.commit()
 
-		# get tickets sold
-		cursor = conn.cursor()
-		query = 'SELECT count(distinct ID) as tickets_sold FROM Ticket WHERE name=%s and flight_number=%s'
-		cursor.execute(query, (airline_name, flight_number))
-		tickets_sold = cursor.fetchone()['tickets_sold']
-		cursor.close()
+    with conn.cursor() as cursor:
+        cursor.execute("SELECT * FROM flight")
+        flights = cursor.fetchall()
 
-		# calculate sold_price from capcity and tickets sold
-		if(tickets_sold>=capacity):
-			error2 = "This flight is sold out"
-			return render_template("searchPurchase.html", error2= error2)
-		else:
-			cursor = conn.cursor()
-			query = 'SELECT base_price FROM Flight WHERE name=%s and flight_number=%s'
-			cursor.execute(query, (airline_name, flight_number))
-			base_price = cursor.fetchone()['base_price']
-			cursor.close()
-			if(tickets_sold/capacity >= 0.7 ):
-				sold_price = base_price*1.2
-			else:
-				sold_price = base_price
-
-			# create new ticket ID that is max(ticket_id)+1
-			cursor = conn.cursor()
-			query = 'SELECT max(ID) as max_ID FROM Ticket'
-			cursor.execute(query)
-			max_id = cursor.fetchone()['max_ID']
-			cursor.close()
-			ticket_id = max_id + 1
-
-			# create new ticket
-			cursor = conn.cursor()
-			query = 'INSERT INTO Ticket VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)'
-			cursor.execute(query, (ticket_id, email, airline_name, flight_number, sold_price, card_type, card_number, name_on_card, exp_date))
-			conn.commit()
-			cursor.close()
-
-			# get customer name
-			cursor = conn.cursor()
-			query = 'SELECT name FROM Customer WHERE email = %s'
-			cursor.execute(query, (email))
-			data = cursor.fetchone()['name']
-			cursor.close()
-
-			# send success message to customerHome
-			message = "Ticket "+str(ticket_id)+" for "+str(airline_name)+" Flight Number "+str(flight_number)+" successfully purchased!"
-			return render_template('customerHome.html', name= data, message = message)
+    return render_template('searchPurchase.html', name=email, flights=flights, message="✅ Purchase completed successfully!")
 
 
 
