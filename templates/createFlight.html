@@ -39,7 +39,7 @@
 
 			<br></br>
 
-<form action="{{ url_for('staffHome.createStaffFlight') }}" method="POST">
+<form action="{{ url_for('staffHome.createFlight') }}" method="POST">
   <label>Flight Number:</label>
   <input type="text" name="flight_number" required><br>
 
@@ -63,7 +63,7 @@
   <select name="ID" required>
     <option value="">-- Select Airplane --</option>
     {% for plane in airplanes %}
-      <option value="{{ plane.ID }}">{{ plane.ID }}</option>
+      <option value="{{ plane.ID }}">{{ plane.ID }} ({{plane.airplane_name}}) </option>
     {% endfor %}
   </select><br>
 
@@ -87,6 +87,23 @@
 
   <input type="submit" value="Create Flight">
 </form>
+
+            <!-- Toast container đơn giản -->
+<div id="toast" style="display:none; position:fixed; top:20px; right:20px; padding:10px; border:1px solid #000; background-color:#fff;">
+  {{ message }}
+</div>
+
+<script>
+  window.onload = function() {
+    var message = "{{ message }}";
+    if (message) {
+      var toast = document.getElementById("toast");
+      toast.style.display = "block";        // Hiển thị popup
+      setTimeout(function(){ toast.style.display = "none"; }, 3000); // 3 giây biến mất
+    }
+  }
+</script>
+
 
 <a href="/staffHome">Return to Home</a>
 </body>

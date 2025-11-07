@@ -1,4 +1,5 @@
 import pandas as pd
+from pymysql.cursors import DictCursor
 
 from db_config import get_connection
 from routes import Flask, render_template, request, session, url_for, redirect, app, get_connection,Blueprint, datetime
@@ -26,6 +27,11 @@ def viewMyFlights():
     # get session email
     email = session['email']
 
+    cursor=conn.cursor(DictCursor)
+    query= 'SELECT * FROM airport'
+    cursor.execute(query)
+    airports=cursor.fetchall()
+    cursor.close()
     # show future flights
     cursor = conn.cursor()
     query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP'
@@ -40,7 +46,7 @@ def viewMyFlights():
     past_flights = cursor.fetchall()
     cursor.close()
 
-    return render_template("viewMyFlights.html", future_flights=future_flights, past_flights=past_flights, name = email)
+    return render_template("viewMyFlights.html", future_flights=future_flights, past_flights=past_flights, name = email, airports=airports)
 
 
 # view customer's future and past flights, as well as searched flights

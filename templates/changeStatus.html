@@ -8,17 +8,14 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/changeStatus.css') }}">
-
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
 <body>
-
 <div class="app-panel">
-
     <header class="app-header">
         <div class="header-welcome">
-            <h1>Welcome {{username}}.</h1>
+            <h1>Welcome {{ username }}.</h1>
             <p class="sub-heading">Change a flight's status.</p>
         </div>
         <div class="header-links">
@@ -28,24 +25,35 @@
     </header>
 
     <main class="app-content">
-
-        <form action="/changeFlightStatus" method="POST">
+        <form action="/changeStatus" method="POST">
             <h2>Change Flight Status</h2>
 
-            <label>Flight Number:</label>
-            <input type="number" name="flight_number" required>
+            <!-- 🔹 Dropdown chọn chuyến bay -->
+            <label for="flight_number">Select Flight:</label>
+            <select name="flight_number" id="flight_number" required>
+                <option value="">-- Choose Flight --</option>
+                {% for f in flights %}
+                <option value="{{ f.flight_number }}">
+                    {{ f.flight_number }} | {{ f.dep_airport }} → {{ f.arr_airport }} ({{ f.dep_date_time }}) - Status: {{ f.status }}
+                </option>
+                {% endfor %}
+            </select>
 
-            <label>Departure Date:</label>
-            <input type="date" name="depart_date" required>
-
-            <label>Desired Flight Status:</label>
-            <input type="text" name="desired_status" required>
+            <!-- 🔹 Dropdown chọn trạng thái mới -->
+            <label for="desired_status">Desired Flight Status:</label>
+            <select name="desired_status" id="desired_status" required>
+                <option value="">-- Choose Status --</option>
+                <option value="on-time">On Time</option>
+                <option value="delayed">Delayed</option>
+            </select>
 
             <input type="submit" value="Change Status">
+
             {% if error %}
-            <p class="error"><strong>Error:</strong> {{error}}</p>
+            <p class="error"><strong>{{ error }}</strong></p>
             {% endif %}
         </form>
-
-    </main> </div> </body>
+    </main>
+</div>
+</body>
 </html>

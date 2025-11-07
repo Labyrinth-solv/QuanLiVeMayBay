@@ -35,8 +35,16 @@
             <label>Airplane ID:</label>
             <input type="number" name="ID" required>
 
+            <label>Airplane Name:</label>
+            <input type="text" name="airplane_name" required>
+
             <label>Airline Name:</label>
-            <input type="text" name="name" required>
+              <select name="airline_name" required>
+                <option value="">-- Select Airline --</option>
+                {% for airline in airlines %}
+                  <option value="{{ airline.name }}">{{ airline.name }} </option>
+                {% endfor %}
+              </select><br>
 
             <label>Number of Seats:</label>
             <input type="number" name="seats" required>

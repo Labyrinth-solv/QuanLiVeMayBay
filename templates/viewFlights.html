@@ -53,24 +53,28 @@
 
     <br>
 
-    <!-- Search flights -->
+   <!-- Search flights -->
     <h2>Search Flights</h2>
-    <form action="{{ url_for('staffHome.searchStaffFlights') }}" method="POST">
+    <form method="POST" action="{{ url_for('staffHome.viewFlights') }}">
         <label>Source Airport:</label>
         <select name="source">
             <option value="">-- Select Source --</option>
-            {% for ap in airports %}
-            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-            {% endfor %}
+            {% if airports %}
+                {% for ap in airports %}
+                    <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                {% endfor %}
+            {% endif %}
         </select>
         <br><br>
 
         <label>Destination Airport:</label>
         <select name="destination">
             <option value="">-- Select Destination --</option>
-            {% for ap in airports %}
-            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-            {% endfor %}
+            {% if airports %}
+                {% for ap in airports %}
+                    <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                {% endfor %}
+            {% endif %}
         </select>
         <br><br>
 
@@ -82,9 +86,10 @@
 
         <input type="submit" value="Search">
     </form>
+
     <a href="/staffHome">Return to Home</a>
 
-    {% if search_flights %}
+    {% if search_flights is defined and search_flights %}
     <h3>Search Results</h3>
     <table>
         <thead>
@@ -106,9 +111,9 @@
             {% endfor %}
         </tbody>
     </table>
+    {% elif search_flights is defined %}
+    <p>No flights found.</p>
     {% endif %}
-
-    <br>
 
     <!-- Search customers -->
     <h2>Search Customers by Flight</h2>
@@ -117,38 +122,36 @@
         <select name="flight_number" id="flight_number" required>
             <option value="">-- Choose Flight --</option>
             {% for f in flights %}
-            <option value="{{ f.flight_number }}">
-                {{ f.flight_number }} | {{ f.dep_airport }} → {{ f.arr_airport }} ({{ f.dep_date_time }})
-            </option>
+                <option value="{{ f.flight_number }}">
+                    {{ f.flight_number }} | {{ f.dep_airport }} → {{ f.arr_airport }} ({{ f.dep_date_time }})
+                </option>
             {% endfor %}
         </select>
         <button type="submit">Search</button>
     </form>
-    <a href="/staffHome">Return to Home</a>
+
+    {% if error2 %}
+    <p style="color:red;">{{ error2 }}</p>
+    {% endif %}
 
     {% if search_flight_customers %}
-    <h3>Customers on Flight</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Seat</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for c in search_flight_customers %}
-            <tr>
-                <td>{{ c.email }}</td>
-                <td>{{ c.customer_name }}</td>
-                <td>{{ c.seat_number }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <h3>Customers on Selected Flight</h3>
+    <table border="1">
+        <tr>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Seat</th>
+        </tr>
+        {% for c in search_flight_customers %}
+        <tr>
+            <td>{{ c.email }}</td>
+            <td>{{ c.customer_name }}</td>
+            <td>{{ c.seat_number }}</td>
+        </tr>
+        {% endfor %}
     </table>
-    {% elif error2 %}
-    <p style="color:red">{{ error2 }}</p>
     {% endif %}
+
 
 </body>
 </html>

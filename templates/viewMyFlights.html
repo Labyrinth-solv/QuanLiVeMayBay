@@ -39,11 +39,21 @@
             <label>Date Range End:</label>
             <input type="date" name="end_date">
 
-            <label>Source Airport or City:</label>
-            <input type="text" name="source" placeholder="e.g. Hanoi">
+            <label>Điểm đi ở thành phố (sân bay):</label>
+              <select name="source" required>
+                <option value="">-- Chọn điểm bắt đầu --</option>
+                {% for ap in airports %}
+                  <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                {% endfor %}
+              </select><br>
 
-            <label>Destination Airport or City:</label>
-            <input type="text" name="destination" placeholder="e.g. Tokyo">
+            <label>Điểm đến ở thành phố (sân bay):</label>
+              <select name="destination" required>
+                <option value="">-- Chọn điêm đến --</option>
+                {% for ap in airports %}
+                  <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                {% endfor %}
+              </select><br>
 
             <input type="submit" value="Search">
 
