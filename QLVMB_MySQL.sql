@@ -79,6 +79,7 @@ CREATE TABLE `airplane` (
   `name` varchar(30) NOT NULL,
   `ID` decimal(30,0) NOT NULL,
   `seats` decimal(5,0) DEFAULT NULL,
+  `airplane_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`ID`,`name`),
   KEY `name` (`name`),
   CONSTRAINT `airplane_ibfk_1` FOREIGN KEY (`name`) REFERENCES `airline` (`name`) ON DELETE CASCADE
@@ -91,7 +92,7 @@ CREATE TABLE `airplane` (
 
 LOCK TABLES `airplane` WRITE;
 /*!40000 ALTER TABLE `airplane` DISABLE KEYS */;
-INSERT INTO `airplane` VALUES ('Ha Noi',1,200),('China Eastern',12345,50),('China Eastern',54321,100);
+INSERT INTO `airplane` VALUES ('Ha Noi',1,200,'HN'),('Ha Noi',2,200,'HN'),('Ha Noi',3,20,'Tmp1'),('China Eastern',12345,50,NULL),('China Eastern',54321,100,NULL);
 /*!40000 ALTER TABLE `airplane` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,7 +182,7 @@ CREATE TABLE `flight` (
 
 LOCK TABLES `flight` WRITE;
 /*!40000 ALTER TABLE `flight` DISABLE KEYS */;
-INSERT INTO `flight` VALUES ('Ha Noi',12321,'2025-10-12 16:07:00','HAN','SGN','2025-10-27 15:13:00',100.00,1,'on-time'),('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed'),('Ha Noi',1234567894,'2020-10-20 01:00:00','HAN','SGN','2020-10-20 03:00:00',1000.00,1,'on time');
+INSERT INTO `flight` VALUES ('Ha Noi',2,'2025-11-07 16:03:00','JFK','PVG','2025-11-13 15:04:00',122.00,2,'delayed'),('Ha Noi',3,'2025-11-07 16:07:00','HAN','JFK','2025-11-13 15:08:00',122.00,2,'delayed'),('Ha Noi',31,'2025-11-07 15:47:00','HAN','PVG','2025-11-08 14:49:00',10.00,1,'on-time'),('Ha Noi',123,'2025-11-04 18:09:00','JFK','HAN','2025-11-06 17:10:00',11.00,1,'on-time'),('Ha Noi',3333,'2025-11-02 05:57:00','HAN','JFK','2025-11-03 06:58:00',1000.00,1,'on-time'),('Ha Noi',12321,'2025-10-12 16:07:00','HAN','SGN','2025-10-27 15:13:00',100.00,1,'on-time'),('Ha Noi',100000,'2025-11-07 10:17:00','JFK','HAN','2025-11-08 09:18:00',1000.00,1,'on-time'),('Ha Noi',123123,'2025-11-01 18:00:00','HAN','SGN','2025-11-04 17:01:00',20.00,1,'on-time'),('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed'),('Ha Noi',1234567894,'2020-10-20 01:00:00','HAN','SGN','2020-10-20 03:00:00',1000.00,1,'on time');
 /*!40000 ALTER TABLE `flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,7 +224,7 @@ DROP TABLE IF EXISTS `monthly_spending`;
 /*!50001 DROP VIEW IF EXISTS `monthly_spending`*/;
 SET @saved_cs_client     = @@character_set_client;
 /*!50503 SET character_set_client = utf8mb4 */;
-/*!50001 CREATE VIEW `monthly_spending` AS SELECT
+/*!50001 CREATE VIEW `monthly_spending` AS SELECT 
  1 AS `ID`,
  1 AS `email`,
  1 AS `name`,
@@ -326,4 +327,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-02 15:18:15
+-- Dump completed on 2025-11-07 22:01:04
