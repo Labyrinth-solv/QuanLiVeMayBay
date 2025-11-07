@@ -151,6 +151,7 @@ def searchPurchase():
         FROM flight f
         JOIN airplane a ON f.id = a.ID
         LEFT JOIN ticket t ON t.flight_number = f.flight_number
+        WHERE f.dep_date_time >= CURRENT_DATE
         GROUP BY 
         f.flight_number, f.name, f.dep_airport, f.arr_airport,
         f.dep_date_time, f.arr_date_time, f.base_price, f.status, a.ID, a.seats;
