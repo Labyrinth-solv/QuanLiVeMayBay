@@ -217,80 +217,136 @@ def rate():
     # get session email
     email = session['email']
 
-    # get previous flights
-    cursor = conn.cursor()
-    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and purchase_date_time< CURRENT_TIMESTAMP and arr_date_time< CURRENT_TIMESTAMP'
-    cursor.execute(query, (email))
+    # lấy danh sách chuyến bay đã hoàn thành
+    cursor = conn.cursor(DictCursor)
+    query = '''
+        SELECT 
+            T.name AS airline_name, 
+            T.flight_number, 
+            F.dep_airport, 
+            F.arr_airport, 
+            F.dep_date_time, 
+            F.arr_date_time, 
+            F.status, 
+            F.base_price,
+            T.sold_price, 
+            T.ID
+        FROM Ticket T
+        JOIN Flight F ON T.name = F.name AND T.flight_number = F.flight_number
+        WHERE T.email = %s 
+          AND T.purchase_date_time < CURRENT_TIMESTAMP 
+          AND F.arr_date_time < CURRENT_TIMESTAMP
+        ORDER BY F.arr_date_time DESC
+    '''
+    cursor.execute(query, (email,))
     previous_flights = cursor.fetchall()
     cursor.close()
 
-    error = None
+    return render_template("rateTemplate.html", previous_flights=previous_flights)
 
-    return render_template("rateTemplate.html", previous_flights=previous_flights, error=error, name = email)
 
 
 # rate previous flight
-@customerHome_bp.route('/rateFlight', methods=['GET', 'POST'])
+@customerHome_bp.route('/rateFlight', methods=['POST'])
 def rateFlight():
-    # get session email
     email = session['email']
 
-    # get previous flights
-    cursor = conn.cursor()
-    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and purchase_date_time< CURRENT_TIMESTAMP and arr_date_time< CURRENT_TIMESTAMP'
-    cursor.execute(query, (email))
-    previous_flights = cursor.fetchall()
-    cursor.close()
-
-    # get info from forms
+    # lấy thông tin form
     airline_name = request.form['airline_name']
     flight_number = request.form['flight_number']
     rating = int(request.form['rating'])
     comment = request.form['comment']
 
-    # get info on the flight the customer is rating
-    cursor = conn.cursor()
-    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and Flight.name = %s and Flight.flight_number = %s and purchase_date_time< CURRENT_TIMESTAMP and arr_date_time< CURRENT_TIMESTAMP'
-    cursor.execute(query, (email, airline_name, flight_number))
-    rating_flight = cursor.fetchone()
+    # kiểm tra chuyến bay có thực sự thuộc lịch sử của người dùng không
+    cursor = conn.cursor(DictCursor)
+    check_query = '''
+        SELECT 1
+        FROM Ticket T
+        JOIN Flight F ON T.name = F.name AND T.flight_number = F.flight_number
+        WHERE T.email = %s 
+          AND F.name = %s 
+          AND F.flight_number = %s 
+          AND F.arr_date_time < CURRENT_TIMESTAMP
+    '''
+    cursor.execute(check_query, (email, airline_name, flight_number))
+    flight_exists = cursor.fetchone()
     cursor.close()
 
-    # check that the flight exists
-    if (not rating_flight):
-        error = "Flight not found"
-        return render_template("rateTemplate.html", previous_flights=previous_flights, error=error)
-    elif (rating < 1 or rating > 10):  # check that the rating is valid
-        error = "Invalid Rating"
-        return render_template("rateTemplate.html", previous_flights=previous_flights, error=error)
+    if not flight_exists:
+        error = "You can only rate flights you have completed."
+    elif rating < 1 or rating > 10:
+        error = "Rating must be between 1 and 10."
     else:
-        # create new rating_id as max(rating_id)+1
-        cursor = conn.cursor()
-        query = 'SELECT max(rating_id) as max_id FROM Flight_Ratings'
-        cursor.execute(query)
+        # tạo id mới cho rating
+        cursor = conn.cursor(DictCursor)
+        cursor.execute('SELECT COALESCE(MAX(rating_id), 0) AS max_id FROM Flight_Ratings')
         max_id = cursor.fetchone()['max_id']
+        rating_id = max_id + 1
         cursor.close()
-        if (not max_id or max_id < 1):
-            rating_id = 1
-        else:
-            rating_id = max_id + 1
 
-        # add rating to Flight_Ratings relation
+        # thêm đánh giá
         cursor = conn.cursor()
-        ins = 'INSERT INTO Flight_Ratings VALUES(%s, %s, %s, %s, %s)'
+        ins = '''
+            INSERT INTO Flight_Ratings (rating_id, name, flight_number, rating, comment)
+            VALUES (%s, %s, %s, %s, %s)
+        '''
         cursor.execute(ins, (rating_id, airline_name, flight_number, rating, comment))
         conn.commit()
         cursor.close()
 
-        # get customer name
-        cursor = conn.cursor()
-        query = 'SELECT name FROM Customer WHERE email = %s'
-        cursor.execute(query, (email))
-        data = cursor.fetchone()['name']
+        message = f"✅ Successfully rated {airline_name} Flight {flight_number}!"
+        # tải lại danh sách chuyến bay để hiển thị lại
+        cursor = conn.cursor(DictCursor)
+        query = '''
+            SELECT 
+                T.name AS airline_name, 
+                T.flight_number, 
+                F.dep_airport, 
+                F.arr_airport, 
+                F.dep_date_time, 
+                F.arr_date_time, 
+                F.status, 
+                T.sold_price, 
+                T.ID
+            FROM Ticket T
+            JOIN Flight F ON T.name = F.name AND T.flight_number = F.flight_number
+            WHERE T.email = %s 
+              AND T.purchase_date_time < CURRENT_TIMESTAMP 
+              AND F.arr_date_time < CURRENT_TIMESTAMP
+            ORDER BY F.arr_date_time DESC
+        '''
+        cursor.execute(query, (email,))
+        previous_flights = cursor.fetchall()
         cursor.close()
 
-        # send success message to customerHome
-        message = "Rating for " + str(airline_name) + " Flight Number " + str(flight_number) + " successfully entered!"
-        return render_template('customerHome.html', name=data, message=message)
+        return render_template('rateTemplate.html', previous_flights=previous_flights, message=message)
+
+    # nếu có lỗi thì render lại với error
+    cursor = conn.cursor(DictCursor)
+    query = '''
+        SELECT 
+            T.name AS airline_name, 
+            T.flight_number, 
+            F.dep_airport, 
+            F.arr_airport, 
+            F.dep_date_time, 
+            F.arr_date_time, 
+            F.status, 
+            T.sold_price, 
+            T.ID
+        FROM Ticket T
+        JOIN Flight F ON T.name = F.name AND T.flight_number = F.flight_number
+        WHERE T.email = %s 
+          AND T.purchase_date_time < CURRENT_TIMESTAMP 
+          AND F.arr_date_time < CURRENT_TIMESTAMP
+        ORDER BY F.arr_date_time DESC
+    '''
+    cursor.execute(query, (email,))
+    previous_flights = cursor.fetchall()
+    cursor.close()
+
+    return render_template('rateTemplate.html', previous_flights=previous_flights, error=error)
+
 
 
 # display page with spending info for last year and last six months
