@@ -51,21 +51,13 @@ def customerRegisterAuth():
     email = request.form['email']
     name = request.form['name']
     password = request.form['password']
-    building_number = int(request.form['building_number'])
-    street = request.form['street']
-    city = request.form['city']
-    state = request.form['state']
-    phone_number = int(request.form['phone_number'])
-    passport_number = int(request.form['passport_number'])
-    passport_exp = request.form['passport_exp']
-    passport_country = request.form['passport_country']
     date_of_birth = request.form['date_of_birth']
 
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
     query = 'SELECT * FROM Customer WHERE email = %s'
-    cursor.execute(query, (email))
+    cursor.execute(query, (email,))
     # stores the results in a variable
     data = cursor.fetchone()
     # use fetchall() if you are expecting more than 1 data row
@@ -80,16 +72,15 @@ def customerRegisterAuth():
     else:
         # add customer to system
         cursor = conn.cursor()
-        ins = 'INSERT INTO Customer VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        ins = 'INSERT INTO Customer (email, name, password, date_of_birth) VALUES (%s, %s, %s, %s)'
         cursor.execute(ins,
-                       (email, name, password, building_number, street, city, state, phone_number, passport_number,
-                        passport_exp, passport_country, date_of_birth))
+                       (email, name, password, date_of_birth))
         conn.commit()
         cursor.close()
 
         # send success message to index
         message = "Customer " + email + " successfully created!"
-        return render_template('index.html', message=message)
+        return render_template('customerRegister.html', message=message)
 
 
 

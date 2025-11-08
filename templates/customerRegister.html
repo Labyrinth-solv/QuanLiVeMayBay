@@ -18,7 +18,7 @@
     <div class="form-grid">
 
         <div class="form-field">
-            <label>Email:</label>
+            <label>Username:</label>
             <input type="text" name="email" required>
         </div>
 
@@ -33,57 +33,21 @@
         </div>
 
         <div class="form-field">
-            <label>Building Number:</label>
-            <input type="number" name="building_number" required>
-        </div>
-
-        <div class="form-field">
-            <label>Street:</label>
-            <input type="text" name="street" required>
-        </div>
-
-        <div class="form-field">
-            <label>City:</label>
-            <input type="text" name="city" required>
-        </div>
-
-        <div class="form-field">
-            <label>State:</label>
-            <input type="text" name="state" required>
-        </div>
-
-        <div class="form-field">
-            <label>Phone Number:</label>
-            <input type="text" name="phone_number" required>
-        </div>
-
-        <div class="form-field">
-            <label>Passport Number:</label>
-            <input type="text" name="passport_number" required>
-        </div>
-
-        <div class="form-field">
-            <label>Passport Expiration Date:</label>
-            <input type="date" name="passport_exp" required>
-        </div>
-
-        <div class="form-field">
-            <label>Passport Country:</label>
-            <input type="text" name="passport_country" required>
-        </div>
-
-        <div class="form-field">
             <label>Date of Birth:</label>
             <input type="date" name="date_of_birth" required>
         </div>
 
     </div>
-    <input type="submit" value="Register">
 
+    <input type="submit" value="Register">
     <a href="/">Go back</a>
 
     {% if error %}
-       <p class="error"><strong>Error:</strong> {{error}}</p>
+       <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+
+    {% if message %}
+   <p class="success">{{ message }}</p>
     {% endif %}
 </form>
 
