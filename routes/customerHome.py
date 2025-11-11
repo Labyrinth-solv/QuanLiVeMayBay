@@ -16,7 +16,7 @@ def customerHome():
     cursor = conn.cursor()
     query = 'SELECT name FROM Customer WHERE email = %s'
     cursor.execute(query, (email))
-    data = cursor.fetchone()['name']
+    data = cursor.fetchone()
     cursor.close()
     return render_template('customerHome.html', name=data)
 
@@ -368,7 +368,7 @@ def trackSpending():
     ''', (email,))
     year_total = cursor.fetchone()['total_spent']
 
-    # 🔹 Lấy chi tiêu 6 tháng gần nhất từ bảng monthly_spending (chỉ tháng)
+    # 🔹 Lấy chi tiêu 6 tháng gần nhất
     monthly = []
     for i in range(6, -1, -1):  # 6 tháng trước → tháng hiện tại
         cursor.execute('''
@@ -381,17 +381,16 @@ def trackSpending():
         row = cursor.fetchone()
         month = row['month'] if row and row['month'] is not None else 0
         spending = float(row['spending'] or 0)
-        monthly.append({
-            'month': f"{month}",  # Chỉ hiển thị tháng
-            'spending': spending
-        })
+        monthly.append((month, spending))  # ✅ Dạng tuple thay vì dict
 
     cursor.close()
 
-    # 🔹 POST → tìm kiếm theo khoảng thời gian
+    # 🔹 Dữ liệu cho phần tìm kiếm
     searched = []
     total = 0
     error = None
+
+    # 🔹 Nếu người dùng gửi form POST (tìm theo khoảng ngày)
     if request.method == 'POST':
         start_date = request.form.get('start_date')
         end_date = request.form.get('end_date')
@@ -400,17 +399,20 @@ def trackSpending():
             start = datetime.strptime(start_date, '%Y-%m-%d')
             end = datetime.strptime(end_date, '%Y-%m-%d')
             if start > end:
-                raise ValueError("Ngày kết thúc phải sau ngày bắt đầu")
+                raise ValueError("Start date cannot be after end date.")
         except Exception as e:
-            error = str(e) if str(e) else "Ngày không hợp lệ"
+            error = str(e) if str(e) else "Invalid date input"
             return render_template('trackSpending.html',
-                                   year=year_total, monthly=monthly,
-                                   searched=[], total=0, name=email,
+                                   year=year_total,
+                                   monthly=monthly,
+                                   searched=[],
+                                   total=0,
+                                   name=email,
                                    error=error)
 
         cursor = conn.cursor(DictCursor)
 
-        # Tổng chi tiêu trong khoảng chọn
+        # 🔹 Tổng chi tiêu trong khoảng chọn
         cursor.execute('''
             SELECT COALESCE(SUM(sold_price), 0) AS total
             FROM Ticket
@@ -419,7 +421,7 @@ def trackSpending():
         ''', (email, start_date, end_date))
         total = float(cursor.fetchone()['total'] or 0)
 
-        # Chi tiêu theo từng tháng trong khoảng chọn
+        # 🔹 Chi tiêu từng tháng trong khoảng
         cursor.execute('''
             SELECT MONTH(purchase_date_time) AS month,
                    COALESCE(SUM(sold_price), 0) AS spending
@@ -432,8 +434,9 @@ def trackSpending():
         by_month = cursor.fetchall()
         cursor.close()
 
-        searched = [{'month': str(r['month'] or 0), 'spending': float(r['spending'] or 0)} for r in by_month]
+        searched = [(r['month'], float(r['spending'] or 0)) for r in by_month]  # ✅ Dạng list tuple
 
+    # 🔹 Render template
     return render_template('trackSpending.html',
                            year=year_total,
                            monthly=monthly,
