@@ -5,55 +5,74 @@
     <title>Add Airplane</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/addAirplane.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
 
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
-<body>
+<body class="bg-light">
 
-<div class="app-panel">
-
-    <header class="app-header">
-        <div class="header-welcome">
-            <h1>Welcome {{username}}.</h1>
-            <p class="sub-heading">Add a new airplane to the system.</p>
+<header class="bg-white shadow-sm border-bottom">
+    <div class="container py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div class="mb-2 mb-md-0">
+                <h1 class="h4 mb-0">Welcome, {{username}}.</h1>
+                <p class="mb-0 text-muted">Add a new airplane to the system.</p>
+            </div>
+            <div class="text-end">
+                <a href="/staffHome" class="btn btn-outline-secondary me-2">Return to Home</a>
+                <a href="/staffLogout" class="btn btn-outline-danger">Logout</a>
+            </div>
         </div>
-        <div class="header-links">
-            <a href="/staffLogout" class="logout-link">Logout</a>
-            <a href="/staffHome" class="home-link">Return to Home</a>
-        </div>
-    </header>
+    </div>
+</header>
 
-    <main class="app-content">
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
 
-        <form action="/createAirplane" method="POST">
-            <h2>Add an Airplane</h2>
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Add an Airplane</h2>
+                </div>
+                <div class="card-body">
+                    <form action="/createAirplane" method="POST">
 
-            <label>Airplane ID:</label>
-            <input type="number" name="ID" required>
+                        {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Error:</strong> {{error}}
+                        </div>
+                        {% endif %}
 
-            <label>Airplane Name:</label>
-            <input type="text" name="airplane_name" required>
+                        <div class="mb-3">
+                            <label for="ID" class="form-label">Airplane ID:</label>
+                            <input type="number" class="form-control" id="ID" name="ID" required>
+                        </div>
 
-            <label>Airline Name:</label>
-              <select name="airline_name" required>
-                <option value="">-- Select Airline --</option>
-                {% for airline in airlines %}
-                  <option value="{{ airline.name }}">{{ airline.name }} </option>
-                {% endfor %}
-              </select><br>
+                        <div class="mb-3">
+                            <label for="airplane_name" class="form-label">Airplane Name:</label>
+                            <input type="text" class="form-control" id="airplane_name" name="airplane_name" required>
+                        </div>
 
-            <label>Number of Seats:</label>
-            <input type="number" name="seats" required>
+                        <div class="mb-3">
+                            <label for="airline_name" class="form-label">Airline Name:</label>
+                            <select name="airline_name" id="airline_name" class="form-select" required>
+                                <option value="">-- Select Airline --</option>
+                                {% for airline in airlines %}
+                                  <option value="{{ airline.name }}">{{ airline.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
 
-            <input type="submit" value="Add Airplane">
-            {% if error %}
-               <p class="error"><strong>Error:</strong> {{error}}</p>
-            {% endif %}
-        </form>
+                        <div class="mb-3">
+                            <label for="seats" class="form-label">Number of Seats:</label>
+                            <input type="number" class="form-control" id="seats" name="seats" required>
+                        </div>
 
-    </main> </div> </body>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Add Airplane</button>
+                        </div>
+
+                    </form>
+                </div> </div> </div> </div> </main> </body>
 </html>

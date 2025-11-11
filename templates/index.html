@@ -5,19 +5,17 @@
   <title>Flight System</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!--  Bootstrap CSS -->
   <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
 
-  <!-- Favicon -->
   <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 
-
 </head>
-<body>
-  <!--  Navbar -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 shadow-sm">
+
+<body class="d-flex flex-column min-vh-100">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="/">✈️ Flight System</a>
+      <a class="navbar-brand fw-bold" href="/">Flight System</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -34,27 +32,26 @@
     </div>
   </nav>
 
-  <!--  Nội dung chính -->
   <main class="container flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center py-5">
-    <div class="bg-dark bg-opacity-75 p-5 rounded-4 shadow-lg" style="max-width: 600px;">
-      <h1 class="display-5 fw-bold mb-3">Welcome to the Flight Management System!</h1>
-      <p class="lead mb-4">Manage your flights, bookings, and staff all in one place.</p>
+
+    <div style="max-width: 600px;">
+
+      <h1 class="mb-3">Welcome to the Flight Management System!</h1>
+      <p class="mb-4">Manage your flights, bookings, and staff all in one place.</p>
 
       <div class="d-grid gap-3">
-        <a href="/searchFlight" class="btn btn-primary btn-lg">Search Flights</a>
-        <a href="/customerLogin" class="btn btn-outline-light btn-lg">Customer Login</a>
-        <a href="/customerRegister" class="btn btn-success btn-lg">Register</a>
-        <a href="/staffLogin" class="btn btn-warning btn-lg text-dark">Staff Login</a>
+        <a href="/searchFlight" class="btn btn-outline-secondary btn-lg">Search Flights</a>
+        <a href="/customerLogin" class="btn btn-outline-secondary btn-lg">Customer Login</a>
+        <a href="/customerRegister" class="btn btn-outline-secondary btn-lg">Register</a>
+        <a href="/staffLogin" class="btn btn-outline-secondary btn-lg">Staff Login</a>
       </div>
     </div>
   </main>
 
-  <!-- Footer -->
-  <footer class="bg-dark bg-opacity-75 text-center text-white-50 py-3 mt-auto">
+  <footer class="text-center text-muted py-3 mt-auto border-top">
     <p class="mb-0">© 2025 Flight System | All rights reserved</p>
   </footer>
 
-  <!-- Bootstrap JS -->
   <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

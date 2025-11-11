@@ -5,46 +5,90 @@
     <title>Staff Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/staffHome.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
 
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
-<body>
+<body class="bg-light">
 
-{% if message %}
-<p class="message"><strong></strong> {{message}}</p>
-{% endif %}
+<header class="bg-white shadow-sm border-bottom">
+    <div class="container py-3">
+        <div class="d-flex justify-content-between align-items-center">
 
-<header class="page-header">
-    <div class="header-welcome">
-        <h1>Welcome {{username}}.</h1>
-        <p class="sub-heading">How would you like to proceed?</p>
-    </div>
+            <div>
+                <h1 class="h4 mb-0">Welcome, {{username}}.</h1>
+                <p class="mb-0 text-muted">How would you like to proceed?</p>
+            </div>
 
-    <div class="header-logout">
-        <a href="/staffLogout" class="logout-link">Logout</a>
+            <div>
+                <a href="/staffLogout" class="btn btn-outline-danger">Logout</a>
+            </div>
+        </div>
     </div>
 </header>
 
-<main class="page-main">
+<main class="container my-5">
 
-    <nav class="menu-grid">
-        <a href="/viewFlights">View Flights</a>
-        <a href="/createFlight">Create New Flight</a>
-        <a href="/changeStatus">Change Flight Status</a>
-        <a href="/addAirplane">Add Airplane</a>
-        <a href="/addAirport">Add Airport</a>
-
-        </nav>
-
+    {% if message %}
+    <div class="alert alert-success" role="alert">
+        {{message}}
+    </div>
+    {% endif %}
     {% if error %}
-       <p class="error"><strong>Error:</strong> {{error}}</p>
+    <div class="alert alert-danger" role="alert">
+        <strong>Error:</strong> {{error}}
+    </div>
     {% endif %}
 
-</main>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+        <div class="col">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body p-5 d-flex align-items-center justify-content-center">
+                    <h5 class="card-title mb-0">View Flights</h5>
+                    <a href="/viewFlights" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body p-5 d-flex align-items-center justify-content-center">
+                    <h5 class="card-title mb-0">Create New Flight</h5>
+                    <a href="/createFlight" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body p-5 d-flex align-items-center justify-content-center">
+                    <h5 class="card-title mb-0">Change Flight Status</h5>
+                    <a href="/changeStatus" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body p-5 d-flex align-items-center justify-content-center">
+                    <h5 class="card-title mb-0">Add Airplane</h5>
+                    <a href="/addAirplane" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 shadow-sm text-center">
+                <div class="card-body p-5 d-flex align-items-center justify-content-center">
+                    <h5 class="card-title mb-0">Add Airport</h5>
+                    <a href="/addAirport" class="stretched-link"></a>
+                </div>
+            </div>
+        </div>
+
+    </div></main>
 
 </body>
 </html>
