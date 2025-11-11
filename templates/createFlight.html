@@ -1,110 +1,169 @@
-<html>
-	<html>
-		<body>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Create New Flight - Airline Staff</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-			<h1>Create New Flights</h1>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-			<head>Flights in next 30 days</head>
-			<table>
-				<style>
-					table, th, td {
-					  border: 1px solid black;
-					  border-collapse: collapse;
-					}
-					</style>
-				<th>Airline Name</th>
-				<th>Flight Number</th>
-				<th>Source Airport</th>
-				<th>Destination Airport</th>
-				<th>Departure Date and Time</th>
-				<th>Landing Date and Time</th>
-				<th>Base Price</th>
-				<th>Aiplane ID</th>
-				<th>Status</th>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
+</head>
 
-			{% for line in next30 %}
-				<tr>
-					<td>{{line['name']}}</td>
-					<td>{{line['flight_number']}}</td>
-					<td>{{line['dep_airport']}}</td>
-					<td>{{line['arr_airport']}}</td>
-					<td>{{line['dep_date_time']}}</td>
-					<td>{{line['arr_date_time']}}</td>
-					<td>{{line['base_price']}}</td>
-					<td>{{line['ID']}}</td>
-					<td>{{line['status']}}</td>
-				</tr>
-			{% endfor %}
-			</table>
+<body class="bg-light">
 
-			<br></br>
+<!-- HEADER -->
+<header class="bg-white shadow-sm border-bottom">
+  <div class="container py-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center">
+      <div class="mb-2 mb-md-0">
+        <h1 class="h4 mb-0">✈️ Tạo chuyến bay mới</h1>
+      </div>
+      <div class="text-end">
+        <a href="/staffHome" class="btn btn-outline-secondary me-2">← Quay lại</a>
+        <a href="/staffLogout" class="btn btn-outline-danger">Đăng xuất</a>
+      </div>
+    </div>
+  </div>
+</header>
 
-<form action="{{ url_for('staffHome.createFlight') }}" method="POST">
-  <label>Flight Number:</label>
-  <input type="text" name="flight_number" required><br>
+<!-- MAIN -->
+<main class="container my-5">
 
-  <label>Source Airport:</label>
-  <select name="source" required>
-    <option value="">-- Select Source --</option>
-    {% for ap in airports %}
-      <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-    {% endfor %}
-  </select><br>
+  <h2 class="mb-4 text-center">📅 Danh sách chuyến bay trong 30 ngày tới</h2>
 
-  <label>Destination Airport:</label>
-  <select name="destination" required>
-    <option value="">-- Select Destination --</option>
-    {% for ap in airports %}
-      <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-    {% endfor %}
-  </select><br>
+  <div class="card shadow-sm mb-5">
+    <div class="card-body table-responsive">
+      <table class="table table-striped align-middle text-center">
+        <thead class="table-dark">
+          <tr>
+            <th>Airline Name</th>
+            <th>Flight Number</th>
+            <th>Source Airport</th>
+            <th>Destination Airport</th>
+            <th>Departure Date & Time</th>
+            <th>Landing Date & Time</th>
+            <th>Base Price</th>
+            <th>Airplane ID</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for line in next30 %}
+          <tr>
+            <td>{{ line['name'] }}</td>
+            <td>{{ line['flight_number'] }}</td>
+            <td>{{ line['dep_airport'] }}</td>
+            <td>{{ line['arr_airport'] }}</td>
+            <td>{{ line['dep_date_time'] }}</td>
+            <td>{{ line['arr_date_time'] }}</td>
+            <td>{{ line['base_price'] }}</td>
+            <td>{{ line['ID'] }}</td>
+            <td>{{ line['status'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-  <label>Airplane ID:</label>
-  <select name="ID" required>
-    <option value="">-- Select Airplane --</option>
-    {% for plane in airplanes %}
-      <option value="{{ plane.ID }}">{{ plane.ID }} ({{plane.airplane_name}}) </option>
-    {% endfor %}
-  </select><br>
+  <!-- CREATE NEW FLIGHT FORM -->
+  <div class="card shadow-sm p-4 mb-5">
+    <h4 class="mb-4 text-center">🛫 Tạo chuyến bay mới</h4>
 
-  <label>Status:</label>
-  <select name="status" required>
-    {% for s in statuses %}
-      <option value="{{ s }}">{{ s }}</option>
-    {% endfor %}
-  </select><br>
+    <form action="{{ url_for('staffHome.createFlight') }}" method="POST" class="row g-3">
 
-  <label>Departure Date:</label>
-  <input type="date" name="dep_date" required>
-  <input type="time" name="dep_time" required><br>
+      <div class="col-md-6">
+        <label class="form-label">Flight Number:</label>
+        <input type="text" name="flight_number" class="form-control" required>
+      </div>
 
-  <label>Arrival Date:</label>
-  <input type="date" name="arr_date" required>
-  <input type="time" name="arr_time" required><br>
+      <div class="col-md-6">
+        <label class="form-label">Base Price:</label>
+        <input type="number" name="base_price" class="form-control" required>
+      </div>
 
-  <label>Base Price:</label>
-  <input type="number" name="base_price" required><br>
+      <div class="col-md-6">
+        <label class="form-label">Source Airport:</label>
+        <select name="source" class="form-select" required>
+          <option value="">-- Select Source --</option>
+          {% for ap in airports %}
+            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+          {% endfor %}
+        </select>
+      </div>
 
-  <input type="submit" value="Create Flight">
-</form>
+      <div class="col-md-6">
+        <label class="form-label">Destination Airport:</label>
+        <select name="destination" class="form-select" required>
+          <option value="">-- Select Destination --</option>
+          {% for ap in airports %}
+            <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+          {% endfor %}
+        </select>
+      </div>
 
-            <!-- Toast container đơn giản -->
-<div id="toast" style="display:none; position:fixed; top:20px; right:20px; padding:10px; border:1px solid #000; background-color:#fff;">
-  {{ message }}
-</div>
+      <div class="col-md-6">
+        <label class="form-label">Airplane ID:</label>
+        <select name="ID" class="form-select" required>
+          <option value="">-- Select Airplane --</option>
+          {% for plane in airplanes %}
+            <option value="{{ plane.ID }}">{{ plane.ID }} ({{ plane.airplane_name }})</option>
+          {% endfor %}
+        </select>
+      </div>
 
-<script>
-  window.onload = function() {
-    var message = "{{ message }}";
-    if (message) {
-      var toast = document.getElementById("toast");
-      toast.style.display = "block";        // Hiển thị popup
-      setTimeout(function(){ toast.style.display = "none"; }, 3000); // 3 giây biến mất
-    }
-  }
-</script>
+      <div class="col-md-6">
+        <label class="form-label">Status:</label>
+        <select name="status" class="form-select" required>
+          {% for s in statuses %}
+            <option value="{{ s }}">{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
+      <div class="col-md-6">
+        <label class="form-label">Departure Date & Time:</label>
+        <div class="d-flex gap-2">
+          <input type="date" name="dep_date" class="form-control" required>
+          <input type="time" name="dep_time" class="form-control" required>
+        </div>
+      </div>
 
-<a href="/staffHome">Return to Home</a>
+      <div class="col-md-6">
+        <label class="form-label">Arrival Date & Time:</label>
+        <div class="d-flex gap-2">
+          <input type="date" name="arr_date" class="form-control" required>
+          <input type="time" name="arr_time" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="col-12 text-center mt-4">
+        <button type="submit" class="btn btn-primary btn-lg px-5">🚀 Create Flight</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Toast -->
+  {% if message %}
+  <div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="liveToast" class="toast show bg-light border border-success" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto text-success">Notification</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ message }}
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
