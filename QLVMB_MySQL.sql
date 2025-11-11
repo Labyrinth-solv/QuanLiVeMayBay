@@ -36,7 +36,7 @@ CREATE TABLE `airline` (
 
 LOCK TABLES `airline` WRITE;
 /*!40000 ALTER TABLE `airline` DISABLE KEYS */;
-INSERT INTO `airline` VALUES ('China Eastern'),('Ha Noi');
+INSERT INTO `airline` VALUES ('Bamboo Airways'),('China Eastern'),('Ha Noi'),('VietJet Air'),('VietNam'),('VietTravel');
 /*!40000 ALTER TABLE `airline` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,7 +51,7 @@ CREATE TABLE `airline_staff` (
   `username` varchar(30) NOT NULL,
   `password` varchar(30) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
-  `yourname` varchar(30) DEFAULT NULL,
+  `staff_name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`username`),
   KEY `name` (`name`),
   CONSTRAINT `airline_staff_ibfk_1` FOREIGN KEY (`name`) REFERENCES `airline` (`name`) ON DELETE SET NULL
@@ -92,7 +92,7 @@ CREATE TABLE `airplane` (
 
 LOCK TABLES `airplane` WRITE;
 /*!40000 ALTER TABLE `airplane` DISABLE KEYS */;
-INSERT INTO `airplane` VALUES ('Ha Noi',1,200,'HN'),('Ha Noi',2,200,'HN'),('Ha Noi',3,20,'Tmp1'),('China Eastern',12345,50,NULL),('China Eastern',54321,100,NULL);
+INSERT INTO `airplane` VALUES ('Ha Noi',1,200,'HN'),('Ha Noi',2,200,'HN'),('Ha Noi',3,20,'Tmp1'),('Ha Noi',4,100,'tmp2'),('China Eastern',12345,50,NULL),('China Eastern',54321,100,NULL);
 /*!40000 ALTER TABLE `airplane` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +116,7 @@ CREATE TABLE `airport` (
 
 LOCK TABLES `airport` WRITE;
 /*!40000 ALTER TABLE `airport` DISABLE KEYS */;
-INSERT INTO `airport` VALUES ('HAN','Ha Noi'),('JFK','New York City'),('PVG','Shanghai'),('SGN','Ho Chi Minh');
+INSERT INTO `airport` VALUES ('HAN','Ha Noi'),('JFK','New York City'),('Nội Bài (HAN)','Hà Nội'),('PVG','Shanghai'),('SGN','Ho Chi Minh');
 /*!40000 ALTER TABLE `airport` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -143,7 +143,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('admin','duc','admin',1,'2005-01-17'),('email@123.com','Max Needle','password',1234567890,'2000-08-30'),('email@345.com','Matt Needle','password',1234567891,'1985-11-03');
+INSERT INTO `customer` VALUES ('1','1','1',NULL,'0001-01-01'),('admin','duc','admin',1,'2005-01-17'),('email@123.com','Max Needle','password',1234567890,'2000-08-30'),('email@345.com','Matt Needle','password',1234567891,'1985-11-03'),('tmp2','duc','1',NULL,'2000-11-06'),('tmp3','duc','1',NULL,'1111-01-01');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -182,7 +182,7 @@ CREATE TABLE `flight` (
 
 LOCK TABLES `flight` WRITE;
 /*!40000 ALTER TABLE `flight` DISABLE KEYS */;
-INSERT INTO `flight` VALUES ('Ha Noi',2,'2025-11-07 16:03:00','JFK','PVG','2025-11-13 15:04:00',122.00,2,'delayed'),('Ha Noi',3,'2025-11-07 16:07:00','HAN','JFK','2025-11-13 15:08:00',122.00,2,'delayed'),('Ha Noi',31,'2025-11-07 15:47:00','HAN','PVG','2025-11-08 14:49:00',10.00,1,'on-time'),('Ha Noi',123,'2025-11-04 18:09:00','JFK','HAN','2025-11-06 17:10:00',11.00,1,'on-time'),('Ha Noi',3333,'2025-11-02 05:57:00','HAN','JFK','2025-11-03 06:58:00',1000.00,1,'on-time'),('Ha Noi',12321,'2025-10-12 16:07:00','HAN','SGN','2025-10-27 15:13:00',100.00,1,'on-time'),('Ha Noi',100000,'2025-11-07 10:17:00','JFK','HAN','2025-11-08 09:18:00',1000.00,1,'on-time'),('Ha Noi',123123,'2025-11-01 18:00:00','HAN','SGN','2025-11-04 17:01:00',20.00,1,'on-time'),('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed'),('Ha Noi',1234567894,'2020-10-20 01:00:00','HAN','SGN','2020-10-20 03:00:00',1000.00,1,'on time');
+INSERT INTO `flight` VALUES ('Ha Noi',2,'2025-11-07 16:03:00','JFK','PVG','2025-11-13 15:04:00',122.00,2,'delayed'),('Ha Noi',3,'2025-11-07 16:07:00','HAN','JFK','2025-11-13 15:08:00',122.00,2,'on-time'),('Ha Noi',11,'2025-11-12 10:41:00','HAN','SGN','2025-11-12 19:41:00',100.00,2,'on-time'),('Ha Noi',31,'2025-11-07 15:47:00','HAN','PVG','2025-11-08 14:49:00',10.00,1,'on-time'),('Ha Noi',123,'2025-11-04 18:09:00','JFK','HAN','2025-11-06 17:10:00',11.00,1,'on-time'),('Ha Noi',3333,'2025-11-02 05:57:00','HAN','JFK','2025-11-03 06:58:00',1000.00,1,'on-time'),('Ha Noi',12321,'2025-10-12 16:07:00','HAN','SGN','2025-10-27 15:13:00',100.00,1,'on-time'),('Ha Noi',100000,'2025-11-07 10:17:00','JFK','HAN','2025-11-08 09:18:00',1000.00,1,'on-time'),('Ha Noi',123123,'2025-11-01 18:00:00','HAN','SGN','2025-11-04 17:01:00',20.00,1,'on-time'),('China Eastern',1234567890,'2020-10-11 03:00:00','JFK','PVG','2020-10-11 19:00:00',1000.00,12345,'on-time'),('China Eastern',1234567891,'2020-10-12 03:00:00','PVG','JFK','2020-10-12 19:00:00',1200.00,12345,'on-time'),('China Eastern',1234567892,'2020-10-14 03:00:00','JFK','PVG','2020-10-14 19:00:00',1200.00,54321,'delayed'),('China Eastern',1234567893,'2020-10-15 03:00:00','PVG','JFK','2020-10-15 19:00:00',1000.00,54321,'delayed'),('Ha Noi',1234567894,'2020-10-20 01:00:00','HAN','SGN','2020-10-20 03:00:00',1000.00,1,'on time');
 /*!40000 ALTER TABLE `flight` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -213,6 +213,7 @@ CREATE TABLE `flight_ratings` (
 
 LOCK TABLES `flight_ratings` WRITE;
 /*!40000 ALTER TABLE `flight_ratings` DISABLE KEYS */;
+INSERT INTO `flight_ratings` VALUES (1,'Ha Noi',123,4,'good');
 /*!40000 ALTER TABLE `flight_ratings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -270,7 +271,7 @@ DROP TABLE IF EXISTS `ticket`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `ticket` (
-  `ID` decimal(30,0) NOT NULL,
+  `ID` varchar(10) NOT NULL,
   `email` varchar(30) DEFAULT NULL,
   `name` varchar(30) DEFAULT NULL,
   `flight_number` decimal(30,0) DEFAULT NULL,
@@ -296,7 +297,7 @@ CREATE TABLE `ticket` (
 
 LOCK TABLES `ticket` WRITE;
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
-INSERT INTO `ticket` VALUES (13579,'email@123.com','China Eastern',1234567890,950.00,'credit',1234567887654321,'Max Needle','2025-01-05','2020-01-04 22:00:00'),(24680,'email@123.com','China Eastern',1234567891,1350.00,'debit',8765432112345678,'Max Needle','2024-05-06','2020-01-04 22:00:00');
+INSERT INTO `ticket` VALUES ('13579','email@123.com','China Eastern',1234567890,950.00,'credit',1234567887654321,'Max Needle','2025-01-05','2020-01-04 22:00:00'),('24680','email@123.com','China Eastern',1234567891,1350.00,'debit',8765432112345678,'Max Needle','2024-05-06','2020-01-04 22:00:00'),('TK001','admin','Ha Noi',123,11.00,NULL,NULL,NULL,NULL,'2025-11-07 16:20:32'),('TK002','admin','Ha Noi',11,100.00,NULL,NULL,NULL,NULL,'2025-11-11 09:49:04'),('TK003','admin','Ha Noi',11,100.00,NULL,NULL,NULL,NULL,'2025-11-11 09:50:44');
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -327,4 +328,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-07 22:01:04
+-- Dump completed on 2025-11-11 16:53:16
