@@ -5,37 +5,28 @@
     <title>Rate Flights</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Bootstrap -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
-    <style>
-        /* CSS cho hiệu ứng sao */
-        .star-rating {
-            direction: rtl;
-            display: inline-flex;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .star-rating input[type="radio"] {
-            display: none;
-        }
-        .star-rating label {
-            color: #ccc;
-            transition: color 0.2s;
-        }
-        .star-rating label:hover,
-        .star-rating label:hover ~ label {
-            color: gold;
-        }
-        .star-rating input[type="radio"]:checked ~ label {
-            color: gold;
-        }
-    </style>
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
 <body class="bg-light">
-<div class="container mt-4">
+
+<header class="bg-white shadow-sm border-bottom">
+    <div class="container py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div class="mb-2 mb-md-0">
+                <h1 class="h4 mb-0">Welcome, {{name}}.</h1>
+            </div>
+            <div class="text-end">
+                <a href="/customerLogout" class="btn btn-outline-danger">Logout</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main class="container my-5">
     <h1 class="text-center mb-4">Rate Your Past Flights</h1>
 
     {% if message %}
@@ -46,64 +37,64 @@
     {% endif %}
 
     {% if previous_flights %}
-        <table class="table table-bordered table-striped align-middle">
-            <thead class="table-dark text-center">
-                <tr>
-                    <th>Airline</th>
-                    <th>Flight Number</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Departure</th>
-                    <th>Arrival</th>
-                    <th>Cost</th>
-                    <th>Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for flight in previous_flights %}
-                <tr>
-                    <td>{{ flight.airline_name }}</td>
-                    <td>{{ flight.flight_number }}</td>
-                    <td>{{ flight.dep_airport }}</td>
-                    <td>{{ flight.arr_airport }}</td>
-                    <td>{{ flight.dep_date_time }}</td>
-                    <td>{{ flight.arr_date_time }}</td>
-                    <td>{{ flight.base_price }}</td>
-                    <td>
-                        <form action="{{ url_for('customerHome.rateFlight') }}" method="POST">
-                            <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
-                            <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped align-middle mb-0">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>Airline</th>
+                            <th>Flight Number</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Cost</th>
+                            <th style="min-width: 200px;">Rate</th> </tr>
+                    </thead>
+                    <tbody>
+                    {% for flight in previous_flights %}
+                        <tr>
+                            <td>{{ flight.airline_name }}</td>
+                            <td>{{ flight.flight_number }}</td>
+                            <td>{{ flight.dep_airport }}</td>
+                            <td>{{ flight.arr_airport }}</td>
+                            <td>{{ flight.dep_date_time }}</td>
+                            <td>{{ flight.arr_date_time }}</td>
+                            <td>${{ "{:,.0f}".format(flight.base_price) }}</td>
+                            <td>
+                                <form action="{{ url_for('customerHome.rateFlight') }}" method="POST">
+                                    <input type="hidden" name="airline_name" value="{{ flight.airline_name }}">
+                                    <input type="hidden" name="flight_number" value="{{ flight.flight_number }}">
 
-                            <!-- Chọn sao -->
-                            <div class="star-rating mb-2">
-                                {% for i in range(5, 0, -1) %}
-                                    <input type="radio" id="star{{ i }}-{{ flight.flight_number }}" name="rating" value="{{ i }}" required>
-                                    <label for="star{{ i }}-{{ flight.flight_number }}">★</label>
-                                {% endfor %}
-                            </div>
+                                    <select name="rating" class="form-select form-select-sm mb-2" required>
+                                        <option value="" disabled selected>-- Select rating --</option>
+                                        <option value="5">5 ★★★★★</option>
+                                        <option value="4">4 ★★★★☆</option>
+                                        <option value="3">3 ★★★☆☆</option>
+                                        <option value="2">2 ★★☆☆☆</option>
+                                        <option value="1">1 ★☆☆☆☆</option>
+                                    </select>
 
-                            <!-- Ô comment -->
-                            <div class="mb-2">
-                                <textarea name="comment" rows="2" placeholder="Your comment..." class="form-control"></textarea>
-                            </div>
+                                    <div class="mb-2">
+                                        <textarea name="comment" rows="2" placeholder="Your comment..." class="form-control form-control-sm"></textarea>
+                                    </div>
 
-                            <button type="submit" class="btn btn-primary btn-sm w-100">Submit</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
+                                    <button type"submit" class="btn btn-primary btn-sm w-100">Submit</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div> </div> {% else %}
         <p class="text-center text-muted">You have no past flights to rate.</p>
     {% endif %}
 
     <div class="text-center mt-4">
         <a href="{{ url_for('customerHome.customerHome') }}" class="btn btn-secondary">Back to Home</a>
     </div>
-</div>
+</main>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

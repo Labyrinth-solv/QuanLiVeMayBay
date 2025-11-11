@@ -1,41 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Flight System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href = "{{ url_for('static', filename = 'img/favicon-32x32.png') }}" type="image/png">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <meta charset="utf-8">
+  <title>Flight System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!--  Bootstrap CSS -->
+  <link href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
+
+
 </head>
+<body>
+  <!--  Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">✈️ Flight System</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link active" href="/searchFlight">Search Flights</a></li>
+          <li class="nav-item"><a class="nav-link" href="/checkStatus" hidden>Check Status</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customerLogin">Customer Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/customerRegister">Register</a></li>
+          <li class="nav-item"><a class="nav-link" href="/staffLogin">Staff Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/staffRegister" hidden>Staff Register</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
-<body class="hide-overlay">
-    <script>
-        const backgrounds = [
-            "/static/img/bg1.jpg",
-            "/static/img/bg2.jpg",
-            "/static/img/bg3.jpg",
-            "/static/img/bg4.jpg"
-        ];
-        const randomIndex = Math.floor(Math.random() * backgrounds.length);
-        document.body.style.background = `url('${backgrounds[randomIndex]}') no-repeat center center fixed`;
-        document.body.style.backgroundSize = "cover";
-    </script>
+  <!--  Nội dung chính -->
+  <main class="container flex-grow-1 d-flex flex-column justify-content-center align-items-center text-center py-5">
+    <div class="bg-dark bg-opacity-75 p-5 rounded-4 shadow-lg" style="max-width: 600px;">
+      <h1 class="display-5 fw-bold mb-3">Welcome to the Flight Management System!</h1>
+      <p class="lead mb-4">Manage your flights, bookings, and staff all in one place.</p>
 
-    <main class="content">
-        <h1>Welcome to the Flight Management System!</h1>
+      <div class="d-grid gap-3">
+        <a href="/searchFlight" class="btn btn-primary btn-lg">Search Flights</a>
+        <a href="/customerLogin" class="btn btn-outline-light btn-lg">Customer Login</a>
+        <a href="/customerRegister" class="btn btn-success btn-lg">Register</a>
+        <a href="/staffLogin" class="btn btn-warning btn-lg text-dark">Staff Login</a>
+      </div>
+    </div>
+  </main>
 
-        <nav>
-            <a href="/searchFlight">Search Flights</a>
-            <a href="/checkStatus" hidden>Check Status</a>
-            <a href="/customerLogin">Customer Login</a>
-            <a href="/customerRegister">Register</a>
-            <a href="/staffLogin">Staff Login</a>
-            <a href="/staffRegister" hidden>Staff Register</a>
-        </nav>
-    </main>
+  <!-- Footer -->
+  <footer class="bg-dark bg-opacity-75 text-center text-white-50 py-3 mt-auto">
+    <p class="mb-0">© 2025 Flight System | All rights reserved</p>
+  </footer>
 
-    <footer>
-        <p>© 2025 Flight System | All rights reserved</p>
-    </footer>
+  <!-- Bootstrap JS -->
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 </body>
 </html>

@@ -5,89 +5,118 @@
     <title>Track My Spending</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/trackSpending.css') }}">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
-<body>
+<body class="bg-light">
 
-<div class="app-panel">
-
-    <header class="app-header">
-        <div class="header-welcome">
-            <h1>Welcome {{name}}.</h1> 
-            <p class="sub-heading">Review your spending history.</p>
+<header class="bg-white shadow-sm border-bottom">
+    <div class="container py-3">
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <div class="mb-2 mb-md-0">
+                <h1 class="h4 mb-0">Welcome, {{name}}.</h1>
+                <p class="mb-0 text-muted">Review your spending history.</p>
+            </div>
+            <div class="text-end">
+                <a href="/customerLogout" class="btn btn-outline-danger me-2">Logout</a>
+                <a href="/customerHome" class="btn btn-outline-secondary">Return to Home</a>
+            </div>
         </div>
-        <div class="header-links">
-            <a href="/customerLogout" class="logout-link">Logout</a>
-            <a href="/customerHome" class="home-link">Return to Home</a>
+    </div>
+</header>
+
+<main class="container my-5">
+    <div class="row g-5">
+
+        <div class="col-lg-6">
+
+            <h2 class="h4 mb-3">Spending in the past year:
+                <span class="badge bg-primary fs-4">${{year}}</span>
+            </h2>
+
+            <h3 class="h5 mb-3">Spending in the past six months</h3>
+
+            <div class="card shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Month</th>
+                                <th>Spending</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for line in monthly %}
+                            <tr>
+                                <td>{{line['0']}}</td>
+                                <td>${{line['1']}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-    </header>
 
-    <main class="app-content">
+        <div class="col-lg-6">
 
-        <div class="spending-summary">
-            <h2>Spending in the past year: <strong>${{year}}</strong></h2>
-            <h3>Spending in the past six months</h3>
-            
-            <table class="spending-table">
-                <thead>
-                    <tr>
-                        <th>Month</th>
-                        <th>Spending</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for line in monthly %}
-                    <tr>
-                        <td>{{line['0']}}</td>
-                        <td>${{line['1']}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Search spending in date range</h2>
+                </div>
+                <div class="card-body">
+                    <form action="/searchSpending" method="POST">
+                        <div class="mb-3">
+                            <label for="start_date" class="form-label">Date Range Start:</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
 
-        <form action="/searchSpending" method="POST">
-            <h2>Search spending in date range</h2>
-            
-            <label>Date Range Start:</label>
-            <input type="date" name="start_date" required>
-            
-            <label>Date Range End:</label>
-            <input type="date" name="end_date" required>
-            
-            <input type="submit" value="Search">
-            {% if error %}
-            <p class="error"><strong>Error:</strong> {{error}}</p>
-            {% endif %}	
-        </form>
+                        <div class="mb-3">
+                            <label for="end_date" class="form-label">Date Range End:</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" required>
+                        </div>
 
-        {% if total is defined %}
-        <h2 class="table-heading">Total spending in searched date range: ${{total}}</h2>
-        {% endif %}
+                        <button type="submit" class="btn btn-primary">Search</button>
 
-        {% if searched %}
-        <table class="spending-table">
-            <thead>
-                <tr>
-                    <th>Month</th>
-                    <th>Spending</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in searched %}
-                <tr>
-                    <td>{{line['0']}}</td>
-                    <td>${{line['1']}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+                        {% if error %}
+                        <div class="alert alert-danger mt-3" role="alert">
+                            <strong>Error:</strong> {{error}}
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
 
-    </main> </div> </body>
+            {% if total is defined %}
+            <h2 class="h5 mt-4">Total spending in range:
+                <span class="badge bg-success fs-5">${{total}}</span>
+            </h2>
+            {% endif %}
+
+            {% if searched %}
+            <div class="card shadow-sm mt-3">
+                <div class="table-responsive">
+                    <table class="table table-striped mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Month</th>
+                                <th>Spending</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for line in searched %}
+                            <tr>
+                                <td>{{line['0']}}</td>
+                                <td>${{line['1']}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+        </div></div></main> </body>
 </html>

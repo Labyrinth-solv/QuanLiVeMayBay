@@ -5,170 +5,223 @@
     <title>My Flights</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app_base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/viewMyFlights.css') }}">
-    
+    <!-- ✅ 1. Thêm Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
-<body>
+<!-- ✅ 2. Thêm nền xám nhạt cho toàn trang -->
+<body class="bg-light">
 
-<div class="app-panel">
+<!-- ✅ 3. Xây dựng Header bằng class của Bootstrap -->
+<header class="bg-white shadow-sm border-bottom">
+    <div class="container py-3">
+        <!-- Dùng Flexbox để căn chỉnh 2 bên -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
 
-    <header class="app-header">
-        <div class="header-welcome">
-            <h1>Welcome {{name}}.</h1> 
-            <p class="sub-heading">Here are your upcoming and past flights.</p>
+            <!-- Phần chào mừng bên trái -->
+            <div class="mb-2 mb-md-0">
+                <h1 class="h4 mb-0">Welcome, {{name}}.</h1>
+                <p class="mb-0 text-muted">Here are your upcoming and past flights.</p>
+            </div>
+
+            <!-- Nút Logout bên phải -->
+            <div class="text-end">
+                <a href="/customerHome" class="btn btn-outline-secondary me-2">Return to Home</a>
+                <a href="/customerLogout" class="btn btn-outline-danger">Logout</a>
+            </div>
         </div>
+    </div>
+</header>
 
-        <div class="header-links">
-            <a href="/customerLogout" class="logout-link">Logout</a>
-            <a href="/customerHome" class="home-link">Return to Home</a>
+<!-- ✅ 4. Dùng Container cho nội dung chính -->
+<main class="container my-5">
+
+    <!-- ✅ 5. Form tìm kiếm được thiết kế lại bằng Grid và Card -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Search My Flights</h2>
         </div>
-    </header>
+        <div class="card-body">
+            <form action="/searchMyFlights" method="POST">
+                <!-- Dùng Form Grid (row) để chia cột responsive -->
+                <div class="row g-3">
 
-    <main class="app-content">
+                    <div class="col-md-6">
+                        <label for="start_date" class="form-label">Date Range Start:</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date">
+                    </div>
 
-        <form action="/searchMyFlights" method="POST">
-            <h2>Search My Flights</h2>
+                    <div class="col-md-6">
+                        <label for="end_date" class="form-label">Date Range End:</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date">
+                    </div>
 
-            <label>Date Range Start:</label>
-            <input type="date" name="start_date">
+                    <div class="col-md-6">
+                        <label for="source" class="form-label">Điểm đi:</label>
+                        <select class="form-select" id="source" name="source">
+                            <option value="">-- Chọn điểm bắt đầu --</option>
+                            {% for ap in airports %}
+                              <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-            <label>Date Range End:</label>
-            <input type="date" name="end_date">
+                    <div class="col-md-6">
+                        <label for="destination" class="form-label">Điểm đến:</label>
+                        <select class="form-select" id="destination" name="destination">
+                            <option value="">-- Chọn điểm đến --</option>
+                            {% for ap in airports %}
+                              <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div> <!-- Hết .row -->
 
-            <label>Điểm đi ở thành phố (sân bay):</label>
-              <select name="source" required>
-                <option value="">-- Chọn điểm bắt đầu --</option>
-                {% for ap in airports %}
-                  <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-                {% endfor %}
-              </select><br>
+                <!-- Nút Submit -->
+                <button type="submit" class="btn btn-primary mt-4">Search</button>
 
-            <label>Điểm đến ở thành phố (sân bay):</label>
-              <select name="destination" required>
-                <option value="">-- Chọn điêm đến --</option>
-                {% for ap in airports %}
-                  <option value="{{ ap.name }}">{{ ap.city }} ({{ ap.name }})</option>
-                {% endfor %}
-              </select><br>
+                <!-- Hiển thị lỗi (nếu có) -->
+                {% if error %}
+                <div class="alert alert-danger mt-3">
+                    <strong>Error:</strong> {{ error }}
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
 
-            <input type="submit" value="Search">
 
-            {% if error %}
-            <p class="error"><strong>Error:</strong> {{ error }}</p>
-            {% endif %}
-        </form>
+    <!-- ✅ 6. Bảng kết quả (dùng chung cho cả 3) -->
 
-        {% if search_flights %}
-        <h2 class="table-heading">Searched Flights</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date & Time</th>
-                    <th>Landing Date & Time</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                    <th>Ticket ID</th>
-                    <th>Purchase Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in search_flights %}
-                <tr>
-                    <td>{{ line['name'] }}</td>
-                    <td>{{ line['flight_number'] }}</td>
-                    <td>{{ line['dep_airport'] }}</td>
-                    <td>{{ line['arr_airport'] }}</td>
-                    <td>{{ line['dep_date_time'] }}</td>
-                    <td>{{ line['arr_date_time'] }}</td>
-                    <td>{{ line['status'] }}</td>
-                    <td>{{ line['sold_price'] }}</td>
-                    <td>{{ line['ID'] }}</td>
-                    <td>{{ line['purchase_date_time'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+    {% if search_flights %}
+    <h2 class="mb-3">Searched Flights</h2>
+    <div class="card shadow-sm">
+        <!-- 'table-responsive' rất quan trọng để xem trên điện thoại -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Airline</th>
+                        <th>Flight #</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Departure</th>
+                        <th>Landing</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Ticket ID</th>
+                        <th>Purchased</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in search_flights %}
+                    <tr>
+                        <td>{{ line['name'] }}</td>
+                        <td>{{ line['flight_number'] }}</td>
+                        <td>{{ line['dep_airport'] }}</td>
+                        <td>{{ line['arr_airport'] }}</td>
+                        <td>{{ line['dep_date_time'] }}</td>
+                        <td>{{ line['arr_date_time'] }}</td>
+                        <td>{{ line['status'] }}</td>
+                        <td>${{ "{:,.0f}".format(line['sold_price']) }}</td>
+                        <td>{{ line['ID'] }}</td>
+                        <td>{{ line['purchase_date_time'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Đường kẻ ngang phân cách -->
+    <hr class="my-5">
+    {% endif %}
 
-        {% if future_flights %}
-        <h2 class="table-heading">Future Flights</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date & Time</th>
-                    <th>Landing Date & Time</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                    <th>Ticket ID</th>
-                    <th>Purchase Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in future_flights %}
-                <tr>
-                    <td>{{ line['name'] }}</td>
-                    <td>{{ line['flight_number'] }}</td>
-                    <td>{{ line['dep_airport'] }}</td>
-                    <td>{{ line['arr_airport'] }}</td>
-                    <td>{{ line['dep_date_time'] }}</td>
-                    <td>{{ line['arr_date_time'] }}</td>
-                    <td>{{ line['status'] }}</td>
-                    <td>{{ line['sold_price'] }}</td>
-                    <td>{{ line['ID'] }}</td>
-                    <td>{{ line['purchase_date_time'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
 
-        {% if past_flights %}
-        <h2 class="table-heading">Previous Flights</h2>
-        <table>
-           <thead>
-                <tr>
-                    <th>Airline Name</th>
-                    <th>Flight Number</th>
-                    <th>Source Airport</th>
-                    <th>Destination Airport</th>
-                    <th>Departure Date & Time</th>
-                    <th>Landing Date & Time</th>
-                    <th>Status</th>
-                    <th>Price</th>
-                    <th>Ticket ID</th>
-                    <th>Purchase Date & Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for line in past_flights %}
-                <tr>
-                    <td>{{ line['name'] }}</td>
-                    <td>{{ line['flight_number'] }}</td>
-                    <td>{{ line['dep_airport'] }}</td>
-                    <td>{{ line['arr_airport'] }}</td>
-                    <td>{{ line['dep_date_time'] }}</td>
-                    <td>{{ line['arr_date_time'] }}</td>
-                    <td>{{ line['status'] }}</td>
-                    <td>{{ line['sold_price'] }}</td>
-                    <td>{{ line['ID'] }}</td>
-                    <td>{{ line['purchase_date_time'] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+    {% if future_flights %}
+    <h2 class="mb-3">Future Flights</h2>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Airline</th>
+                        <th>Flight #</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Departure</th>
+                        <th>Landing</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Ticket ID</th>
+                        <th>Purchased</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in future_flights %}
+                    <tr>
+                        <td>{{ line['name'] }}</td>
+                        <td>{{ line['flight_number'] }}</td>
+                        <td>{{ line['dep_airport'] }}</td>
+                        <td>{{ line['arr_airport'] }}</td>
+                        <td>{{ line['dep_date_time'] }}</td>
+                        <td>{{ line['arr_date_time'] }}</td>
+                        <td>{{ line['status'] }}</td>
+                        <td>${{ "{:,.0f}".format(line['sold_price']) }}</td>
+                        <td>{{ line['ID'] }}</td>
+                        <td>{{ line['purchase_date_time'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <hr class="my-5">
+    {% endif %}
 
-    </main> </div> </body>
+
+    {% if past_flights %}
+    <h2 class="mb-3">Previous Flights</h2>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Airline</th>
+                        <th>Flight #</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Departure</th>
+                        <th>Landing</th>
+                        <th>Status</th>
+                        <th>Price</th>
+                        <th>Ticket ID</th>
+                        <th>Purchased</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for line in past_flights %}
+                    <tr>
+                        <td>{{ line['name'] }}</td>
+                        <td>{{ line['flight_number'] }}</td>
+                        <td>{{ line['dep_airport'] }}</td>
+                        <td>{{ line['arr_airport'] }}</td>
+                        <td>{{ line['dep_date_time'] }}</td>
+                        <td>{{ line['arr_date_time'] }}</td>
+                        <td>{{ line['status'] }}</td>
+                        <td>${{ "{:,.0f}".format(line['sold_price']) }}</td>
+                        <td>{{ line['ID'] }}</td>
+                        <td>{{ line['purchase_date_time'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+</main>
+
+</body>
 </html>
