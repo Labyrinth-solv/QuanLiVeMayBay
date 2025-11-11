@@ -42,7 +42,7 @@ def searchFlight():
         flights = cursor.fetchall()
 
         return render_template(
-            "viewFlights.html",
+            "search.html",
             flights=flights,
             airports=airports,
             dep_airport='',

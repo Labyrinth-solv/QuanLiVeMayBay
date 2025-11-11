@@ -46,10 +46,11 @@ def viewFlights():
 	# Nếu là GET → hiển thị chuyến bay 30 ngày tới
 	if request.method == 'GET':
 		cursor.execute('''
-			SELECT * FROM Flight
-			WHERE name IN (SELECT name FROM Airline_Staff WHERE username = %s)
-			  AND dep_date_time > CURRENT_DATE
-			  AND dep_date_time < DATE_ADD(NOW(), INTERVAL 1 MONTH)
+			SELECT w1.*, w2.seats FROM Flight w1
+			JOIN airplane w2 on w1.id=w2.id 
+			WHERE w1.name IN (SELECT name FROM Airline_Staff WHERE username = %s)
+			  AND w1.dep_date_time > CURRENT_DATE
+			  AND w1.dep_date_time < DATE_ADD(NOW(), INTERVAL 1 MONTH)
 		''', (username,))
 		next30 = cursor.fetchall()
 		cursor.close()
@@ -57,7 +58,6 @@ def viewFlights():
 							   next30=next30,
 							   airports=airports,
 							   flights=flights,
-							   search_flights=None,
 							   error=None)
 
 	# Nếu là POST → lọc theo điều kiện
@@ -66,9 +66,12 @@ def viewFlights():
 	source_airport = request.form.get('source')
 	destination_airport = request.form.get('destination')
 
+
 	query = '''
-		SELECT * FROM Flight
-		WHERE name IN (SELECT name FROM Airline_Staff WHERE username = %s)
+		SELECT w1.*, w2.airplane_name, w2.seats
+        FROM Flight w1
+        JOIN Airplane w2 ON w1.id = w2.id
+        WHERE w1.name IN (SELECT name FROM Airline_Staff WHERE username = %s)
 	'''
 	params = [username]
 
@@ -151,53 +154,6 @@ def searchFlightCustomers():
 		error2=None
 	)
 
-
-	#XỬ LÍ CHO createFlight.html
-# display form to create a new flight and display all flights for next 30 days run by their airline
-# @staffHome_bp.route('/createFlight', methods=['GET', 'POST'])
-# def createFlight():
-#     username = session['username']
-#
-#     # lấy các chuyến bay sắp tới (giữ nguyên)
-#     cursor = conn.cursor()
-#     query = '''
-#         SELECT * FROM Flight
-#         WHERE name IN (SELECT name FROM Airline_Staff WHERE username = %s)
-#         AND dep_date_time > CURRENT_DATE
-#         AND dep_date_time < DATE_ADD(NOW(), INTERVAL 1 MONTH)
-#     '''
-#     cursor.execute(query, (username,))
-#     next30 = cursor.fetchall()
-#     cursor.close()
-#
-#     #  lấy danh sách sân bay
-#     cursor = conn.cursor()
-#     cursor.execute("SELECT name, city FROM Airport")
-#     airports = cursor.fetchall()
-#     cursor.close()
-#
-#     #  lấy danh sách máy bay của hãng nhân viên
-#     cursor = conn.cursor()
-#     query = '''
-#         SELECT A.ID
-#         FROM Airplane A
-#         JOIN Airline_Staff S ON A.name = S.name
-#         WHERE S.username = %s
-#     '''
-#     cursor.execute(query, (username,))
-#     airplanes = cursor.fetchall()
-#     cursor.close()
-#
-#     #  trạng thái cố định
-#     statuses = ['on-time', 'delayed']
-#
-#     return render_template(
-#         'createFlight.html',
-#         next30=next30,
-#         airports=airports,
-#         airplanes=airplanes,
-#         statuses=statuses
-#     )
 
 # allow staff to create a new flight
 @staffHome_bp.route('/createFlight', methods=['GET', 'POST'])
@@ -410,43 +366,43 @@ def addAirplane():
 # allow staff to add airplane
 @staffHome_bp.route('/createAirplane', methods=['GET', 'POST'])
 def createAirplane():
-    # get session username
-    username = session['username']
+	# get session username
+	username = session['username']
 
-    # get airplanes owned by staff's airline
-    cursor = conn.cursor()
-    query = 'SELECT * FROM Airplane WHERE name IN (SELECT name FROM Airline_Staff WHERE username = %s)'
-    cursor.execute(query, (username,))
-    airplanes = cursor.fetchall()
-    cursor.close()
+	# get airplanes owned by staff's airline
+	cursor = conn.cursor()
+	query = 'SELECT * FROM Airplane WHERE name IN (SELECT name FROM Airline_Staff WHERE username = %s)'
+	cursor.execute(query, (username,))
+	airplanes = cursor.fetchall()
+	cursor.close()
 
-    # get info from forms
-    ID = request.form['ID']
-    seats = request.form['seats']
-    airplane_name = request.form['airplane_name']
-    airline_name = request.form['airline_name']
+	# get info from forms
+	ID = request.form['ID']
+	seats = request.form['seats']
+	airplane_name = request.form['airplane_name']
+	airline_name = request.form['airline_name']
 
-    # check that the airplane does not already exist
-    cursor = conn.cursor()
-    query = 'SELECT * FROM Airplane WHERE name = %s AND ID = %s'
-    cursor.execute(query, (airline_name, ID))
-    exists = cursor.fetchall()
-    cursor.close()
+	# check that the airplane does not already exist
+	cursor = conn.cursor()
+	query = 'SELECT * FROM Airplane WHERE name = %s AND ID = %s'
+	cursor.execute(query, (airline_name, ID))
+	exists = cursor.fetchall()
+	cursor.close()
 
-    if exists:  # check that the airplane does not already exist
-        error = "This Airplane already exists"
-        return render_template('addAirplane.html', airplanes=airplanes, error=error)
-    else:
-        # add airplane to system
-        cursor = conn.cursor()
-        ins = 'INSERT INTO Airplane VALUES (%s, %s, %s, %s)'
-        cursor.execute(ins, (airline_name, ID, seats, airplane_name))
-        conn.commit()
-        cursor.close()
+	if exists:  # check that the airplane does not already exist
+		error = "This Airplane already exists"
+		return render_template('addAirplane.html', airplanes=airplanes, error=error)
+	else:
+		# add airplane to system
+		cursor = conn.cursor()
+		ins = 'INSERT INTO Airplane VALUES (%s, %s, %s, %s)'
+		cursor.execute(ins, (airline_name, ID, seats, airplane_name))
+		conn.commit()
+		cursor.close()
 
-        # send success message to staffHome
-        message = f"{airline_name} Airplane {ID} successfully added!"
-        return render_template('staffHome.html', message=message)
+		# send success message to staffHome
+		message = f"{airline_name} Airplane {ID} successfully added!"
+		return render_template('staffHome.html', message=message)
 
 
 
@@ -463,42 +419,31 @@ def createAirport():
 	# get session username
 	username = session['username']
 
-	#check that the user is an airline staff
+	# get info from froms
+	name = request.form['name']
+	city = request.form['city']
+
+	# check that the airport doesn't already exist
 	cursor = conn.cursor()
-	query = 'SELECT first_name, last_name FROM Airline_Staff WHERE username = %s'
-	cursor.execute(query, (username))
-	data = cursor.fetchone()
+	query = 'SELECT * from Airport WHERE name = %s'
+	cursor.execute(query, (name))
+	exists = cursor.fetchall()
 	cursor.close()
 
-	if(not data):
-		error = "You are not authorized to add an Airplane"
+	if(exists): # check that the airport doesn't already exist
+		error = "This Airport already exists in the system"
 		return render_template('addAirport.html', error = error)
 	else:
-		# get info from froms
-		name = request.form['name']
-		city = request.form['city']
-
-		# check that the airport doesn't already exist
+		# add airport to the system
 		cursor = conn.cursor()
-		query = 'SELECT * from Airport WHERE name = %s'
-		cursor.execute(query, (name))
-		exists = cursor.fetchall()
+		ins = 'INSERT INTO Airport VALUES (%s, %s)'
+		cursor.execute(ins, (name, city))
+		conn.commit()
 		cursor.close()
 
-		if(exists): # check that the airport doesn't already exist
-			error = "This Airport already exists in the system"
-			return render_template('addAirport.html', error = error)
-		else:
-			# add airport to the system
-			cursor = conn.cursor()
-			ins = 'INSERT INTO Airport VALUES (%s, %s)'
-			cursor.execute(ins, (name, city))
-			conn.commit()
-			cursor.close()
-
-			# send success message to staffHome
-			message = name+" Airport successfully added!"
-			return render_template('staffHome.html', first_name = data['first_name'], last_name = data['last_name'], message = message)
+		# send success message to staffHome
+		message = name+" Airport successfully added!"
+		return render_template('staffHome.html', message = message)
 
 
 # allow staff to log out

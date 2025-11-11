@@ -34,7 +34,11 @@ def viewMyFlights():
     cursor.close()
     # show future flights
     cursor = conn.cursor()
-    query = 'SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time FROM Ticket left join Flight on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP'
+    query = ('SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time '
+             'FROM Ticket '
+             'left join Flight '
+             '  on Ticket.name = Flight.name and Ticket.flight_number = Flight.flight_number '
+             'WHERE email=%s and dep_date_time> CURRENT_TIMESTAMP')
     cursor.execute(query, (email))
     future_flights = cursor.fetchall()
     cursor.close()
@@ -204,7 +208,7 @@ def purchaseInfo():
         conn.commit()
 
     with conn.cursor() as cursor:
-        cursor.execute("SELECT * FROM flight")
+        cursor.execute("SELECT * FROM flight where dep_date_time>=CURRENT_DATE")
         flights = cursor.fetchall()
 
     return render_template('searchPurchase.html', name=email, flights=flights, message="✅ Purchase completed successfully!")
@@ -294,7 +298,7 @@ def rateFlight():
         conn.commit()
         cursor.close()
 
-        message = f"✅ Successfully rated {airline_name} Flight {flight_number}!"
+        message = f" Successfully rated {airline_name} Flight {flight_number}!"
         # tải lại danh sách chuyến bay để hiển thị lại
         cursor = conn.cursor(DictCursor)
         query = '''
