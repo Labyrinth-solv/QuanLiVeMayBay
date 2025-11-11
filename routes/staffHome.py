@@ -20,7 +20,8 @@ def staffHome():
 	cursor.execute(query, (username))
 	data = cursor.fetchone()
 	cursor.close()
-	return render_template('staffHome.html', username= username)
+	error = None
+	return render_template('staffHome.html', username= username, error=error)
 
 
 
@@ -68,9 +69,9 @@ def viewFlights():
 
 	query = '''
 		SELECT w1.*, w2.airplane_name, w2.seats
-        FROM Flight w1
-        JOIN Airplane w2 ON w1.id = w2.id
-        WHERE w1.name IN (SELECT name FROM Airline_Staff WHERE username = %s)
+		FROM Flight w1
+		JOIN Airplane w2 ON w1.id = w2.id
+		WHERE w1.name IN (SELECT name FROM Airline_Staff WHERE username = %s)
 	'''
 	params = [username]
 

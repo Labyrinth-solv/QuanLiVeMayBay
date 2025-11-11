@@ -370,18 +370,25 @@ def trackSpending():
 
     # 🔹 Lấy chi tiêu 6 tháng gần nhất
     monthly = []
-    for i in range(6, -1, -1):  # 6 tháng trước → tháng hiện tại
+    # Duyệt từ 6 tháng trước → đến tháng hiện tại
+    for i in range(6, -1, -1):
         cursor.execute('''
             SELECT 
                 MONTH(DATE_ADD(NOW(), INTERVAL -%s MONTH)) AS month,
                 COALESCE(SUM(sold_price), 0) AS spending
-            FROM monthly_spending
-            WHERE email=%s AND relative_month = %s
-        ''', (i, email, i))
+            FROM Ticket
+            WHERE email = %s
+              AND purchase_date_time >= DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -%s MONTH), '%%Y-%%m-01')
+              AND purchase_date_time < DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -%s + 1 MONTH), '%%Y-%%m-01')
+        ''', (i, email, i, i))
+
         row = cursor.fetchone()
         month = row['month'] if row and row['month'] is not None else 0
         spending = float(row['spending'] or 0)
-        monthly.append((month, spending))  # ✅ Dạng tuple thay vì dict
+        monthly.append({
+            'month': month,
+            'spending': spending
+        })
 
     cursor.close()
 
@@ -434,7 +441,8 @@ def trackSpending():
         by_month = cursor.fetchall()
         cursor.close()
 
-        searched = [(r['month'], float(r['spending'] or 0)) for r in by_month]  # ✅ Dạng list tuple
+        searched = [{'month': r['month'], 'spending': float(r['spending'] or 0)} for r in by_month]
+
 
     # 🔹 Render template
     return render_template('trackSpending.html',
