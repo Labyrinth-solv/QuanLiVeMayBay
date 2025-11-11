@@ -104,7 +104,7 @@ def searchFlight():
     if not flights:
         error = "Không có chuyến bay phù hợp."
         return render_template(
-            "viewFlights.html",
+            "search.html",
             flights=[],
             airports=airports,
             error=error,
@@ -114,7 +114,7 @@ def searchFlight():
         )
 
     return render_template(
-        "viewFlights.html",
+        "search.html",
         flights=flights,
         airports=airports,
         dep_airport=dep_airport,
