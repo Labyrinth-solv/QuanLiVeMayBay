@@ -356,182 +356,88 @@ def rateFlight():
 # display page with spending info for last year and last six months
 @customerHome_bp.route('/trackSpending', methods=['GET', 'POST'])
 def trackSpending():
-    # get session email
     email = session['email']
+    cursor = conn.cursor(DictCursor)
 
-    # get spending for the last year
-    cursor = conn.cursor()
-    query = 'SELECT sum(sold_price) as total_spent FROM Ticket WHERE email=%s and purchase_date_time >= DATE_ADD(NOW(), INTERVAL -1 YEAR) and purchase_date_time<= CURRENT_TIMESTAMP'
-    cursor.execute(query, (email))
-    year = cursor.fetchone()['total_spent']
+    # 🔹 Tổng chi tiêu trong 1 năm qua
+    cursor.execute('''
+        SELECT COALESCE(SUM(sold_price), 0) AS total_spent
+        FROM Ticket
+        WHERE email=%s
+          AND purchase_date_time BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+    ''', (email,))
+    year_total = cursor.fetchone()['total_spent']
+
+    # 🔹 Lấy chi tiêu 6 tháng gần nhất từ bảng monthly_spending (chỉ tháng)
+    monthly = []
+    for i in range(6, -1, -1):  # 6 tháng trước → tháng hiện tại
+        cursor.execute('''
+            SELECT 
+                MONTH(DATE_ADD(NOW(), INTERVAL -%s MONTH)) AS month,
+                COALESCE(SUM(sold_price), 0) AS spending
+            FROM monthly_spending
+            WHERE email=%s AND relative_month = %s
+        ''', (i, email, i))
+        row = cursor.fetchone()
+        month = row['month'] if row and row['month'] is not None else 0
+        spending = float(row['spending'] or 0)
+        monthly.append({
+            'month': f"{month}",  # Chỉ hiển thị tháng
+            'spending': spending
+        })
+
     cursor.close()
 
-    # get spending for this month
-    cursor = conn.cursor()
-    query = 'SELECT month(CURRENT_DATE) as m, year(CURRENT_DATE) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month IS NULL'
-    cursor.execute(query, (email))
-    m0 = cursor.fetchone()
+    # 🔹 POST → tìm kiếm theo khoảng thời gian
+    searched = []
+    total = 0
+    error = None
+    if request.method == 'POST':
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
 
-    # get spending for last month
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -1 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -1 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 1'
-    cursor.execute(query, (email))
-    m1 = cursor.fetchone()
+        try:
+            start = datetime.strptime(start_date, '%Y-%m-%d')
+            end = datetime.strptime(end_date, '%Y-%m-%d')
+            if start > end:
+                raise ValueError("Ngày kết thúc phải sau ngày bắt đầu")
+        except Exception as e:
+            error = str(e) if str(e) else "Ngày không hợp lệ"
+            return render_template('trackSpending.html',
+                                   year=year_total, monthly=monthly,
+                                   searched=[], total=0, name=email,
+                                   error=error)
 
-    # get spending for two months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -2 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -2 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 2'
-    cursor.execute(query, (email))
-    m2 = cursor.fetchone()
+        cursor = conn.cursor(DictCursor)
 
-    # get spending for three months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -3 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -3 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 3'
-    cursor.execute(query, (email))
-    m3 = cursor.fetchone()
+        # Tổng chi tiêu trong khoảng chọn
+        cursor.execute('''
+            SELECT COALESCE(SUM(sold_price), 0) AS total
+            FROM Ticket
+            WHERE email=%s
+              AND purchase_date_time BETWEEN %s AND %s
+        ''', (email, start_date, end_date))
+        total = float(cursor.fetchone()['total'] or 0)
 
-    # get spending for four months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -4 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -4 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 4'
-    cursor.execute(query, (email))
-    m4 = cursor.fetchone()
-
-    # get spending for five months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -5 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -5 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 5'
-    cursor.execute(query, (email))
-    m5 = cursor.fetchone()
-
-    # get spending for six months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -6 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -6 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 6'
-    cursor.execute(query, (email))
-    m6 = cursor.fetchone()
-    cursor.close()
-
-    # combine all monthly spending into dataframe, reorganize, and send to html as a dictionary
-    df = pd.DataFrame(columns=['m', 'y', 'spending'])
-    df = pd.concat([df, pd.DataFrame([m0,m1,m2,m3,m4,m5,m6])], ignore_index=True)
-    df["date"] = df['m'].astype(int).astype(str) + "/" + df["y"].astype(int).astype(str)
-    df.fillna(0, inplace=True)
-    df['relative_month'] = df.index.astype(str)
-    df.set_index('relative_month', inplace=True)
-    df['0'] = df['date']
-    df['1'] = df['spending']
-
-    monthly_df = df[['0', '1']]
-    monthly = monthly_df.to_dict('records')
-
-    return render_template("trackSpending.html", year=year, monthly=monthly, name = email)
-
-
-# search spending by date range
-@customerHome_bp.route('/searchSpending', methods=['GET', 'POST'])
-def searchSpending():
-    # get session email
-    email = session['email']
-
-    # get spending for past year
-    cursor = conn.cursor()
-    query = 'SELECT sum(sold_price) as total_spent FROM Ticket WHERE email=%s and purchase_date_time> (DATE_ADD(NOW(), INTERVAL -1 YEAR))'
-    cursor.execute(query, (email))
-    year = cursor.fetchone()['total_spent']
-    cursor.close()
-
-    # get spending for this month
-    cursor = conn.cursor()
-    query = 'SELECT month(CURRENT_DATE) as m, year(CURRENT_DATE) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month IS NULL'
-    cursor.execute(query, (email))
-    m0 = cursor.fetchone()
-
-    # get spending for last month
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -1 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -1 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 1'
-    cursor.execute(query, (email))
-    m1 = cursor.fetchone()
-
-    # get spending for two months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -2 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -2 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 2'
-    cursor.execute(query, (email))
-    m2 = cursor.fetchone()
-
-    # get spending for three months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -3 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -3 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 3'
-    cursor.execute(query, (email))
-    m3 = cursor.fetchone()
-
-    # get spending for four months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -4 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -4 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 4'
-    cursor.execute(query, (email))
-    m4 = cursor.fetchone()
-
-    # get spending for five months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -5 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -5 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 5'
-    cursor.execute(query, (email))
-    m5 = cursor.fetchone()
-
-    # get spending for six months ago
-    query = 'SELECT month(DATE_ADD(NOW(), INTERVAL -6 MONTH)) as m, year(DATE_ADD(NOW(), INTERVAL -6 MONTH)) as y, sum(sold_price) as spending FROM monthly_spending WHERE email = %s and relative_month = 6'
-    cursor.execute(query, (email))
-    m6 = cursor.fetchone()
-    cursor.close()
-
-    # combine monthly spending into df, reorganize, and send to html as dictionary
-    df = pd.DataFrame(columns=['m', 'y', 'spending'])
-    df = df.append(m0, ignore_index=True).append(m1, ignore_index=True).append(m2, ignore_index=True).append(m3,
-                                                                                                             ignore_index=True).append(
-        m4, ignore_index=True).append(m5, ignore_index=True).append(m6, ignore_index=True)
-    df["date"] = df['m'].astype(int).astype(str) + "/" + df["y"].astype(int).astype(str)
-    df.fillna(0, inplace=True)
-    df['relative_month'] = df.index.astype(str)
-    df.set_index('relative_month', inplace=True)
-    df['0'] = df['date']
-    df['1'] = df['spending']
-
-    monthly_df = df[['0', '1']]
-    monthly = monthly_df.to_dict('records')
-
-    # get info from forms and turn them into datetime objects
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
-    start = datetime.strptime(start_date, '%Y-%m-%d')
-    end = datetime.strptime(end_date, '%Y-%m-%d')
-
-    # get number of months in between dates
-    num_months = (end.year - start.year) * 12 + (end.month - start.month) + 1
-
-    if num_months < 1:  # check that the end_date comes after the start_date
-        error = "End date must be after the start date"
-        return render_template("trackSpending.html", year=year, monthly=monthly, error=error)
-    else:
-        # get total spending in searched date range
-        cursor = conn.cursor()
-        query = 'SELECT sum(sold_price) as total FROM Ticket WHERE email=%s and purchase_date_time>=%s and purchase_date_time<=%s'
-        cursor.execute(query, (email, start_date, end_date))
-        total = cursor.fetchone()['total']
-        cursor.close()
-
-        # get spending by month in searched date range
-        cursor = conn.cursor()
-        query = 'SELECT year(purchase_date_time) as year, month(purchase_date_time) as month, sum(sold_price) as month_spending FROM Ticket WHERE email=%s and purchase_date_time>=%s and purchase_date_time<=%s group by month(purchase_date_time), year(purchase_date_time)'
-        cursor.execute(query, (email, start_date, end_date))
+        # Chi tiêu theo từng tháng trong khoảng chọn
+        cursor.execute('''
+            SELECT MONTH(purchase_date_time) AS month,
+                   COALESCE(SUM(sold_price), 0) AS spending
+            FROM Ticket
+            WHERE email=%s
+              AND purchase_date_time BETWEEN %s AND %s
+            GROUP BY MONTH(purchase_date_time)
+            ORDER BY MONTH(purchase_date_time)
+        ''', (email, start_date, end_date))
         by_month = cursor.fetchall()
         cursor.close()
 
-        # create empty df with all months represented in searched date range
-        d = {'year': [start.year], 'month': [start.month]}
-        empty = pd.DataFrame(d)
-        new_month = start.month
-        new_year = start.year
-        for i in range(num_months - 1):
-            new_month = new_month + 1
-            if new_month > 12:
-                new_month -= 12
-                new_year = new_year + 1
-            new = {'year': new_year, 'month': new_month}
-            empty = empty.append(new, ignore_index=True)
-        spending = pd.DataFrame.from_dict(by_month)
+        searched = [{'month': str(r['month'] or 0), 'spending': float(r['spending'] or 0)} for r in by_month]
 
-        # combine monthly spending and empty df to get complete breakdown of each month in the searched date range
-        search_df = pd.merge(empty, spending, how='left', on=['year', 'month']).fillna(0)
-        search_df["date"] = search_df['month'].astype(str) + "/" + search_df["year"].astype(int).astype(str)
-        search_df['0'] = search_df['date']
-        search_df['1'] = search_df['month_spending']
-        new_df = search_df[['0', '1']]
-        searched = new_df.to_dict('records')
-
-        return render_template("trackSpending.html", year=year, monthly=monthly, total=total, searched=searched)
-
+    return render_template('trackSpending.html',
+                           year=year_total,
+                           monthly=monthly,
+                           searched=searched,
+                           total=total,
+                           name=email,
+                           error=error)

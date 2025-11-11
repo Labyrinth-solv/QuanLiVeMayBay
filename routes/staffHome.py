@@ -20,8 +20,7 @@ def staffHome():
 	cursor.execute(query, (username))
 	data = cursor.fetchone()
 	cursor.close()
-	error = None
-	return render_template('staffHome.html', username= username, error = error)
+	return render_template('staffHome.html', username= username)
 
 
 
