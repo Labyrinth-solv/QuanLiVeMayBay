@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <title>My Flights</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- ✅ 1. Thêm Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}">
 
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
@@ -22,14 +22,12 @@
 
             <!-- Phần chào mừng bên trái -->
             <div class="mb-2 mb-md-0">
-                <h1 class="h4 mb-0">Welcome, {{name}}.</h1>
-                <p class="mb-0 text-muted">Here are your upcoming and past flights.</p>
+                <h1 class="h4 mb-0">Những chuyến bay của bạn.</h1>
             </div>
 
             <!-- Nút Logout bên phải -->
             <div class="text-end">
-                <a href="/customerHome" class="btn btn-outline-secondary me-2">Return to Home</a>
-                <a href="/customerLogout" class="btn btn-outline-danger">Logout</a>
+                <a href="/customerHome" class="btn btn-outline-dark me-2">← Quay lại</a>
             </div>
         </div>
     </div>
@@ -41,7 +39,7 @@
     <!-- ✅ 5. Form tìm kiếm được thiết kế lại bằng Grid và Card -->
     <div class="card shadow-sm mb-5">
         <div class="card-header">
-            <h2 class="h5 mb-0">Search My Flights</h2>
+            <h2 class="h5 mb-0">Tìm kiếm chuyến bay của tôi</h2>
         </div>
         <div class="card-body">
             <form action="/searchMyFlights" method="POST">
@@ -49,12 +47,12 @@
                 <div class="row g-3">
 
                     <div class="col-md-6">
-                        <label for="start_date" class="form-label">Date Range Start:</label>
+                        <label for="start_date" class="form-label">Ngày bắt đầu:</label>
                         <input type="date" class="form-control" id="start_date" name="start_date">
                     </div>
 
                     <div class="col-md-6">
-                        <label for="end_date" class="form-label">Date Range End:</label>
+                        <label for="end_date" class="form-label">Ngày kết thúc:</label>
                         <input type="date" class="form-control" id="end_date" name="end_date">
                     </div>
 
@@ -80,7 +78,7 @@
                 </div> <!-- Hết .row -->
 
                 <!-- Nút Submit -->
-                <button type="submit" class="btn btn-primary mt-4">Search</button>
+                <button type="submit" class="btn btn-primary mt-4">Tìm kiếm</button>
 
                 <!-- Hiển thị lỗi (nếu có) -->
                 {% if error %}
@@ -96,23 +94,23 @@
     <!-- ✅ 6. Bảng kết quả (dùng chung cho cả 3) -->
 
     {% if search_flights %}
-    <h2 class="mb-3">Searched Flights</h2>
+    <h2 class="mb-3">Những chuyến bay tìm được</h2>
     <div class="card shadow-sm">
         <!-- 'table-responsive' rất quan trọng để xem trên điện thoại -->
         <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-striped table-hover align-middle text-center mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Airline</th>
-                        <th>Flight #</th>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Departure</th>
-                        <th>Landing</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                        <th>Ticket ID</th>
-                        <th>Purchased</th>
+                        <th>Tên hãng</th>
+                        <th>Số hiệu chuyến bay</th>
+                        <th>Điểm đi</th>
+                        <th>Điểm đến</th>
+                        <th>Thời gian cất cánh</th>
+                        <th>thời gian hạ cánh</th>
+                        <th>Trạng thái</th>
+                        <th>Giá cơ bản</th>
+                        <th>Mã số vé</th>
+                        <th>Thời gian đặt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -140,22 +138,22 @@
 
 
     {% if future_flights %}
-    <h2 class="mb-3">Future Flights</h2>
+    <h2 class="mb-3">Chuyến bay sắp tới</h2>
     <div class="card shadow-sm">
         <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-striped table-hover align-middle text-center mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Airline</th>
-                        <th>Flight #</th>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Departure</th>
-                        <th>Landing</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                        <th>Ticket ID</th>
-                        <th>Purchased</th>
+                        <th>Tên hãng</th>
+                        <th>Số hiệu chuyến bay</th>
+                        <th>Điểm đi</th>
+                        <th>Điểm đến</th>
+                        <th>Thời gian cất cánh</th>
+                        <th>thời gian hạ cánh</th>
+                        <th>Trạng thái</th>
+                        <th>Giá cơ bản</th>
+                        <th>Mã số vé</th>
+                        <th>Thời gian đặt</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -182,22 +180,22 @@
 
 
     {% if past_flights %}
-    <h2 class="mb-3">Previous Flights</h2>
+    <h2 class="mb-3">Chuyến bay trước đó</h2>
     <div class="card shadow-sm">
         <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
+            <table class="table table-striped table-hover align-middle text-center mb-0">
                 <thead class="table-dark">
                     <tr>
-                        <th>Airline</th>
-                        <th>Flight #</th>
-                        <th>Source</th>
-                        <th>Destination</th>
-                        <th>Departure</th>
-                        <th>Landing</th>
-                        <th>Status</th>
-                        <th>Price</th>
-                        <th>Ticket ID</th>
-                        <th>Purchased</th>
+                        <th>Tên hãng</th>
+                        <th>Số hiệu chuyến bay</th>
+                        <th>Điểm đi</th>
+                        <th>Điểm đến</th>
+                        <th>Thời gian cất cánh</th>
+                        <th>thời gian hạ cánh</th>
+                        <th>Trạng thái</th>
+                        <th>Giá cơ bản</th>
+                        <th>Mã số vé</th>
+                        <th>Thời gian đặt</th>
                     </tr>
                 </thead>
                 <tbody>
