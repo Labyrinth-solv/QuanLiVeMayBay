@@ -21,7 +21,7 @@ def customerLoginAuth():
     # cursor used to send queries
     cursor = conn.cursor()
     # executes query
-    query = 'SELECT * FROM Customer WHERE email = %s and md5(password) = md5(%s)'
+    query = 'SELECT * FROM Customer WHERE email = %s and password =%s'
     cursor.execute(query, (email, password))
     # stores the results in a variable
     data = cursor.fetchone()

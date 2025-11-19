@@ -143,7 +143,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('1','1','1',NULL,'0001-01-01'),('admin','duc','admin',1,'2005-01-17'),('email@123.com','Max Needle','password',1234567890,'2000-08-30'),('email@345.com','Matt Needle','password',1234567891,'1985-11-03'),('tmp2','duc','1',NULL,'2000-11-06'),('tmp3','duc','1',NULL,'1111-01-01');
+INSERT INTO `customer` VALUES ('1','1','1',NULL,'0001-01-01'),('admin','duc','admin',1,'2005-01-17'),('admin2','duc','1',NULL,'2025-11-04'),('email@123.com','Max Needle','password',1234567890,'2000-08-30'),('email@345.com','Matt Needle','password',1234567891,'1985-11-03'),('tmp2','duc','1',NULL,'2000-11-06'),('tmp3','duc','1',NULL,'1111-01-01');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -328,4 +328,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-11 16:53:16
+-- Dump completed on 2025-11-11 21:47:52

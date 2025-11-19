@@ -11,10 +11,10 @@
     <link rel="icon" href="{{ url_for('static', filename='img/favicon-32x32.png') }}" type="image/png">
 </head>
 
-<!-- ✅ 2. Thêm nền xám nhạt cho toàn trang -->
+<!--  2. Thêm nền xám nhạt cho toàn trang -->
 <body class="bg-light">
 
-<!-- ✅ 3. Xây dựng Header bằng class của Bootstrap -->
+<!--  3. Xây dựng Header bằng class của Bootstrap -->
 <header class="bg-white shadow-sm border-bottom">
     <div class="container py-3">
         <!-- Dùng Flexbox để căn chỉnh 2 bên -->
@@ -22,7 +22,7 @@
 
             <!-- Phần chào mừng bên trái -->
             <div class="mb-2 mb-md-0">
-                <h1 class="h4 mb-0">Welcome, {{name}}.</h1>
+                <h1 class="h4 mb-0">Welcome, {{name['name']}}.</h1>
             </div>
 
             <!-- Nút Logout bên phải -->
@@ -34,18 +34,18 @@
     </div>
 </header>
 
-<!-- ✅ 4. Dùng Container cho nội dung chính -->
+<!--  4. Dùng Container cho nội dung chính -->
 <main class="container my-5">
 
     <h2 class="mb-3">Available Flights</h2>
 
     {% if flights %}
     <form action="/purchase" method="POST">
-        <!-- ✅ 5. Bọc bảng trong Card và 'table-responsive' -->
+        <!-- 5. Bọc bảng trong Card và 'table-responsive' -->
         <div class="card shadow-sm">
             <div class="table-responsive">
                 <table class="table table-striped table-hover mb-0">
-                    <thead class="table-dark">
+                    <thead class="table-dark" >
                         <tr>
                             <th>Airline Name</th>
                             <th>Flight #</th>
@@ -72,7 +72,7 @@
                             <td>${{ "{:,.0f}".format(f.base_price) }}</td>
                             <td>{{ f.status }}</td>
                             <td>{{ f.available_seats }}</td>
-                            <!-- ✅ 6. Căn giữa và dùng form-check-input -->
+                            <!--  6. Căn giữa và dùng form-check-input -->
                             <td class="text-center">
                                 <input class="form-check-input" type="radio" name="selected_flight" value="{{ f.name }}|{{ f.flight_number }}" required>
                             </td>
@@ -82,15 +82,17 @@
                 </table>
             </div><!-- Hết .table-responsive -->
 
-            <!-- ✅ 7. Đặt nút Submit ở card-footer -->
+            <!--  7. Đặt nút Submit ở card-footer -->
             <div class="card-footer text-end">
                 <button type="submit" class="btn btn-primary btn-lg">Purchase Selected Flight</button>
             </div>
         </div><!-- Hết .card -->
     </form>
 
+    <a class="btn btn-primary" href="/">Về trang chủ</a>
+
     {% else %}
-    <!-- ✅ 8. Dùng 'alert' khi không có chuyến bay -->
+    <!--  8. Dùng 'alert' khi không có chuyến bay -->
     <div class="alert alert-info" role="alert">
         No flights available at the moment.
     </div>
@@ -98,10 +100,10 @@
 
 
     {% if flight_info %}
-    <!-- ✅ 9. Dùng đường phân cách 'my-5' (margin top/bottom 5) -->
+    <!--  9. Dùng đường phân cách 'my-5' (margin top/bottom 5) -->
     <hr class="my-5">
 
-    <!-- ✅ 10. Dùng Card cho
+    <!--  10. Dùng Card cho
      màn hình xác nhận -->
     <div class="card shadow-sm border-success">
         <div class="card-header bg-success text-white">
@@ -135,7 +137,7 @@
     {% endif %}
 
 
-    <!-- ✅ 11. Dùng 'alert' cho message (nếu có) -->
+    <!--  11. Dùng 'alert' cho message (nếu có) -->
     {% if message %}
     <div class="alert alert-success mt-4" role="alert">
         {{ message }}

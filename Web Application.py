@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 from db_config import get_connection
 import routes.customer
-from routes import customer, staff, search, checkStatus, customerHome, staffHome
+from routes import customer, staff, search, customerHome, staffHome
 
 #Initialize the app from Flask
 app = Flask(__name__, template_folder="templates")
@@ -14,7 +14,6 @@ conn=get_connection()
 app.register_blueprint(customer.customer_bp)
 app.register_blueprint(staff.staff_bp)
 app.register_blueprint(search.search_bp)
-app.register_blueprint(checkStatus.check_bp)
 app.register_blueprint(customerHome.customerHome_bp)
 app.register_blueprint(staffHome.staffHome_bp)
 

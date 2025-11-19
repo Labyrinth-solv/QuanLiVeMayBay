@@ -13,9 +13,9 @@ conn=get_connection()
 @customerHome_bp.route('/customerHome')
 def customerHome():
     email = session['email']
-    cursor = conn.cursor()
+    cursor = conn.cursor(DictCursor)
     query = 'SELECT name FROM Customer WHERE email = %s'
-    cursor.execute(query, (email))
+    cursor.execute(query, (email,))
     data = cursor.fetchone()
     cursor.close()
     return render_template('customerHome.html', name=data)
@@ -155,7 +155,6 @@ def searchPurchase():
         FROM flight f
         JOIN airplane a ON f.id = a.ID
         LEFT JOIN ticket t ON t.flight_number = f.flight_number
-        WHERE f.dep_date_time >= CURRENT_DATE
         GROUP BY 
         f.flight_number, f.name, f.dep_airport, f.arr_airport,
         f.dep_date_time, f.arr_date_time, f.base_price, f.status, a.ID, a.seats;
