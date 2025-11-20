@@ -9,7 +9,6 @@ customerHome_bp=Blueprint("customerHome", __name__)
 conn=get_connection()
 
 
-# redirect to customerHome and display customer name
 @customerHome_bp.route('/customerHome')
 def customerHome():
     email = session['email']
@@ -21,7 +20,6 @@ def customerHome():
     return render_template('customerHome.html', name=data)
 
 
-# view customer's future and past flights
 @customerHome_bp.route('/viewMyFlights')
 def viewMyFlights():
     # get session email
@@ -32,7 +30,7 @@ def viewMyFlights():
     cursor.execute(query)
     airports=cursor.fetchall()
     cursor.close()
-    # show future flights
+
     cursor = conn.cursor()
     query = ('SELECT Ticket.name, Ticket.flight_number, dep_airport, arr_airport, dep_date_time, arr_date_time, status, sold_price, Ticket.ID, purchase_date_time '
              'FROM Ticket '
